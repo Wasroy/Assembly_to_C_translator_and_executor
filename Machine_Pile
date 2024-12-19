@@ -1,2 +1,96 @@
-ICI NOUS METTRONS NOTRE CODE
-ICI NOUS METTRONS NOTRE CODE
+/*ICI NOUS METTRONS NOTRE CODE*/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#define taille_ligne_max 100
+#define taille_mot_max 100
+
+int main() {
+
+    /*Création d'une liste contenant l'ensemble des fonctions de l'assembleur*/
+
+    char *fonctions[]= {
+        "pop",
+        "ipop",
+        "push",
+        "ipush",
+        "push#",
+        "jmp",
+        "jnz ",
+        "call",
+        "ret",
+        "read ",
+        "write",
+        "op",
+        "rnd",
+        "dup",
+        "halt",
+    };  
+
+
+    /* Récuperation du fichier contenant le programme assembleur*/
+    char nom_fichier[50]; 
+    printf("Entrez le nom du fichier contenant le programme en assembleur : ");
+    scanf("%s", nom_fichier);
+
+    FILE* pointeur_fichier_assembleur; 
+    pointeur_fichier_assembleur = fopen(nom_fichier, "r");
+
+    /* Procédure pour verifier l'absence d'erreur */
+    if (pointeur_fichier_assembleur == NULL) {
+        printf("Erreur fopen\n"); 
+        return 1;
+    }
+
+
+    /*Lecture et analyse du fichier. Comme il y a une instruction par ligne, on lit le programme ligne par ligne */
+    char ligne[taille_ligne_max]; 
+    while (fgets(ligne, taille_ligne_max, pointeur_fichier_assembleur) != NULL) {
+        ligne 
+        
+    }
+
+
+
+    fclose(pointeur_fichier_assembleur);
+    
+
+
+
+
+    /* Création du fichier contenant le programme en langage machine (hexadécimal) 
+
+    FILE * pointeur_fichier_hexa; 
+
+    pointeur_fichier_hexa = fopen ( )
+    */
+    return 0;
+    
+
+}
+
+
+void separe_ligne(char ligne[]) {
+    char line[100]; // Stocker une ligne de texte
+    char *words[taille_ligne_max]; // Tableau de pointeurs pour les mots
+    int word_count = 0; // Compteur de mots
+
+    // Exemple de ligne (à remplacer par une lecture depuis un fichier ou l'utilisateur)
+    strcpy(line, "Ceci est une phrase avec des mots séparés par des espaces.");
+
+    // Découper la ligne en mots
+    char *token = strtok(line, " "); // Premier mot
+    while (token != NULL && word_count < taille_ligne_max) {
+        words[word_count] = token; // Ajouter le mot au tableau
+        word_count++;
+        token = strtok(NULL, " "); // Passer au mot suivant
+    }
+
+    // Afficher les mots et leurs indices
+    printf("Mots extraits de la ligne :\n");
+    for (int i = 0; i < word_count; i++) {
+        printf("words[%d] = %s\n", i, words[i]);
+    }
+
+}
