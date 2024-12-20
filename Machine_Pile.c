@@ -32,7 +32,7 @@ int main() {
         printf("words[%d] = %s\n", i, words[i]);
     }
     
-    printf("BOnjour");
+    printf("salam");
 
     return 0;
 }
