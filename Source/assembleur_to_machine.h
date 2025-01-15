@@ -1,7 +1,7 @@
-#ifndef ASSEMBLEURTOMACHINE_H //verif si pas deja utilisé et alors on peut continuer
-#define ASSEMBLEURTOMACHINE_H // si pas deja utilisé on definit
+#ifndef ASSEMBLEUR_TO_MACHINE_H
+#define ASSEMBLEUR_TO_MACHINE_H
 
-//traduire fichier assembleur au langage machine (hexa genre 0X....)
+// Traduire un fichier assembleur en langage machine
 int traducteur(const char *fichier_a_traduire, const char *fichier_traduit);
 
-#endif //termine la condition pour fermer le header et ne pas pouvoir l'inclure une autre fois
+#endif
