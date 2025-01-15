@@ -21,7 +21,7 @@ int traducteur(const char *fichier_a_traduire, const char *fichier_traduit) {
     char line[256];
     while (fgets(line, sizeof(line), input)) {
         // TODO : Traduire chaque ligne en langage machine
-        fprintf(output, "Exemple : %s", line); // Remplace par la logique de traduction
+        fprintf(output, "TEST FINAL: %s", line); // Remplace par la logique de traduction
     }
 
     fclose(input);

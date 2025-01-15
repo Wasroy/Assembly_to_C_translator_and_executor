@@ -2,13 +2,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug simulateur.exe",
+            "name": "Debug executeur",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/simulateur.exe",
+            "program": "${workspaceFolder}/build/executeur.exe",
             "args": ["exemples/Exemple_de_programme_assembleur.txt"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build executeur",
             "environment": [],
             "console": "externalTerminal"
         }
