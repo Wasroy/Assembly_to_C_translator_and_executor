@@ -1,11 +1,4 @@
-TEST FINAL: ici: read 1000
-TEST FINAL:     push 1000
-TEST FINAL:     push# 0
-TEST FINAL:     op 0
-TEST FINAL:     jnz fin
-TEST FINAL:     push 1000
-TEST FINAL:     op 15
-TEST FINAL:     pop 1000
-TEST FINAL:     write 1000
-TEST FINAL:     jmp ici
-TEST FINAL: fin: halt
+09 03e8
+02 03e8
+04 0000
+0b 0000
