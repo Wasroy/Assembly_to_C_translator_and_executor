@@ -4,4 +4,6 @@
 // Traduire un fichier assembleur en langage machine
 int traducteur(const char *fichier_a_traduire, const char *fichier_traduit);
 
+
+
 #endif
