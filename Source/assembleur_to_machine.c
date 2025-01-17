@@ -1,10 +1,12 @@
-
 #include <stdio.h>    // Gestion des fichiers
 #include <stdlib.h>   // Fonctions générales comme malloc, exit
 #include <string.h>   // Gestion des chaînes de caractères
-#include <ctype.h>
+#include <ctype.h> // Pour vérifier les types des variables
 
 #include "assembleur_to_machine.h" // Prototypes de fonctions et constantes
+
+/*On utilise ici 2 passages, le premier pour sauvegarder les étiquettes et le second pour pouvoir les comparer et calculer les sauts avec */
+
 
 
 CodeOperation table_opcodes[] = {
@@ -14,7 +16,7 @@ CodeOperation table_opcodes[] = {
     {"rnd", 0x0C}, {"dup", 0x0D}, {"halt", 0x63}
 };
 
-int taille_opcodes = sizeof(table_opcodes) / sizeof(CodeOperation);
+int taille_opcodes = sizeof(table_opcodes) / sizeof(CodeOperation); //ou juste faire un #DEFINE TAILLEOPCODE 14 mais c plus stylé comme ça
 
 // Fonction pour obtenir le code opération en hexadécimal
 int obtenir_opcode(const char* instruction) {
@@ -23,75 +25,116 @@ int obtenir_opcode(const char* instruction) {
             return table_opcodes[i].opcode;
         }
     }
-    return -1; // Instruction non trouvée
+    return -1; 
 }
 
 // Fonction pour vérifier si une chaîne est un entier valide
 int est_un_entier(const char* str) {
-    for (int i = 0; str[i] != '\0'; i++) {
-        if (!isdigit(str[i]) && !(i == 0 && str[i] == '-')) {
-            return 0;
+    if (str == NULL || str[0] == '\0') {
+        return 0; 
+    }
+
+    if (str[0] != '-' && str[0] != '+' && !isdigit(str[0])) {
+        return 0; 
+    }
+
+    for (int i = 1; str[i] != '\0'; i++) {
+        if (!isdigit(str[i])) {
+            return 0; 
         }
     }
+
     return 1;
 }
 
 int valider_etiq(const char* etiq) {
-    if (!isalpha(etiq[0])) { // Doit commencer par une lettre
+    if (strlen(etiq) > 30) {
         return 0;
     }
-    int longueur = strlen(etiq);
-    if (longueur > 30) { // Longueur maximale
+
+    if (!isalpha(etiq[0])) {
         return 0;
     }
-    for (int i = 0; i < longueur; i++) {
-        if (!isalnum(etiq[i]) && etiq[i] != '_') { // Caractères autorisés
+
+    for (int i = 0; i < strlen(etiq); i++) {
+        if (!isalnum(etiq[i]) && etiq[i] != '_') {
             return 0;
         }
     }
     return 1;
 }
 
-
-
-int traduire_instruction(const char* ligne, char* convertit, int adresse_courante, TableEtiquettes* table_etiq) {
-    char etiq[30] = ""; // Étiquette (optionnelle)
-    char instruction[20]; // Instruction
-    char parametre[50] = ""; // Paramètre (optionnel)
-
-    // Analyse de la ligne
-    if (sscanf(ligne, "%49[^:]: %19s %49s", etiq, instruction, parametre) == 3) {
-        // Vérifie si l'étiquette est valide
-        if (!valider_etiq(etiq)) {
-            fprintf(stderr, "Erreur : étiquette invalide '%s'.\n", etiq);
-            return -1; // Erreur d'étiquette invalide
-        }
-
-        // Vérifie si l'étiquette est déjà utilisée
-        for (int i = 0; i < table_etiq->nombre; i++) {
-            if (strcmp(table_etiq->etiqs[i].nom, etiq) == 0) {
-                fprintf(stderr, "Erreur : étiquette en double '%s'.\n", etiq);
-                return -1; // Erreur d'étiquette en double
-            }
-        }
-
-        // Ajoute l'étiquette à la table
-        strcpy(table_etiq->etiqs[table_etiq->nombre].nom, etiq);
-        table_etiq->etiqs[table_etiq->nombre].adresse = adresse_courante;
-        table_etiq->nombre++;
-    } 
-    else if (sscanf(ligne, "%19s %49s", instruction, parametre) != 2 &&
-             sscanf(ligne, "%19s", instruction) != 1) {
-        fprintf(stderr, "Erreur de syntaxe dans la ligne : %s\n", ligne);
-        return -1; // Erreur de syntaxe
+int collecter_etiq(const char* fichier_source, TableEtiquettes* table_etiq) {
+    FILE* entree = fopen(fichier_source, "r");
+    if (!entree) {
+        printf("\n Erreur : impossible d'ouvrir le fichier source.\n");
+        return -1;
     }
 
-    // Suite de la fonction...
+    char ligne[100];
+    int adresse_courante = 0;
 
+    while (fgets(ligne, sizeof(ligne), entree)) {
+        char etiq[30] = "";
+        char instruction[20];
+        char parametre[50] = "";
+
+        if (sscanf(ligne, "%49[^:]: %19s %49s", etiq, instruction, parametre) == 3 ||
+            sscanf(ligne, "%49[^:]: %19s", etiq, instruction) == 2) {
+            if (!valider_etiq(etiq)) {
+                printf("\n Erreur : étiquette invalide '%s'.\n", etiq);
+                fclose(entree);
+                return -1;
+            }
+
+            for (int i = 0; i < table_etiq->nombre; i++) {
+                if (strcmp(table_etiq->etiqs[i].nom, etiq) == 0) {
+                    printf("\n Erreur : étiquette en double '%s'.\n", etiq);
+                    fclose(entree);
+                    return -1;
+                }
+            }
+
+            strcpy(table_etiq->etiqs[table_etiq->nombre].nom, etiq);
+            table_etiq->etiqs[table_etiq->nombre].adresse = adresse_courante;
+            table_etiq->nombre++;
+        }
+
+        adresse_courante++;
+    }
+
+    fclose(entree);
+    return 0;
+}
+
+int traduire_instruction(const char* ligne, char* convertit, int adresse_courante, TableEtiquettes* table_etiq) {
+    char etiq[30] = "";
+    char instruction[20];
+    char parametre[50] = "";
+
+    if (sscanf(ligne, "%49[^:]: %19s %49s", etiq, instruction, parametre) == 3 ||
+        sscanf(ligne, "%49[^:]: %19s", etiq, instruction) == 2) {
+        if (strlen(etiq) > 0 && !valider_etiq(etiq)) {
+            printf("\n Erreur : étiquette invalide '%s'\n", etiq);
+            return -1;
+        }
+    } else if (sscanf(ligne, "%19s %49s", instruction, parametre) == 2 ||
+               sscanf(ligne, "%19s", instruction) == 1) {
+        // Pas d'étiquette sur cette ligne, ce qui est acceptable
+    } else {
+        printf("\n Erreur de syntaxe dans la ligne : %s\n", ligne);
+        return -1;
+    }
+
+    // Vérifie si "instruction" est une étiquette suivie d'un deux-points
+    if (instruction[strlen(instruction) - 1] == ':') {
+        printf("\n Erreur : '%s' semble être une étiquette mal placée\n", instruction);
+        return -1;
+    }
 
     int code_op = obtenir_opcode(instruction);
     if (code_op == -1) {
-        fprintf(stderr, "Erreur : instruction inconnue '%s'.\n", instruction);
+        printf("\n Erreur : instruction inconnue '%s'\n", instruction);
         return -1;
     }
 
@@ -106,7 +149,7 @@ int traduire_instruction(const char* ligne, char* convertit, int adresse_courant
             }
         }
         if (!etiq_trouvee && !est_un_entier(parametre)) {
-            fprintf(stderr, "Erreur : paramètre invalide '%s'.\n", parametre);
+            printf("\n Erreur : paramètre invalide '%s'\n", parametre);
             return -1;
         }
         if (!etiq_trouvee) {
@@ -118,63 +161,42 @@ int traduire_instruction(const char* ligne, char* convertit, int adresse_courant
     return 0;
 }
 
+int traducteur(const char* fichier_source, const char* fichier_sortie) {
+    printf("Le traducteur a été utilisé depuis le fichier assembleur_to_machine.c ! \n");
 
+    TableEtiquettes table_etiq = {.nombre = 0};
 
-int traducteur(const char* fichier_source, const char* fichier_sortie){
-
-    printf("Le traducteur a ete utilisé depuis le fichier !");
+    if (collecter_etiq(fichier_source, &table_etiq) != 0) {
+        return -1;
+    }
 
     FILE* entree = fopen(fichier_source, "r");
     FILE* sortie = fopen(fichier_sortie, "w");
 
-    // GESTION DES ERREURS D'OUVERTURE ///////////////////////////
-    if (!entree) {
-        printf("Erreur d'ouverture du fichier Assembleur");
-        return -1; // Erreur d'ouverture de fichier
+    if (!entree || !sortie) {
+        printf("\n Erreur : problème d'ouverture des fichiers\n");
+        if (entree) fclose(entree);
+        if (sortie) fclose(sortie);
+        return -1;
     }
-    if (!sortie){
-        printf("Erreur d'ouverture du fichier qui va contenir la traduction en langage machine");
-    }
-    ////////////////////////////////////////////////////////////
 
-    char ligne[100] ;// car une ligne ne peut pas dépasser 100 caractères.
-    char convertit[100] ; // la ligne traduite
-    TableEtiquettes table_etiq = {.nombre = 0};
+    char ligne[100];
+    char convertit[100];
     int adresse_courante = 0;
 
-    while (fgets(ligne, sizeof(ligne), entree)) { //on parcout tout le fichier assembleur
-
-        if (strlen(ligne) >= 100) {
-            fprintf(stderr, "Erreur : ligne trop longue.\n");
-            fclose(entree);
-            fclose(sortie);
-        return -1;
-        }
-
-        if (traduire_instruction(ligne, convertit,adresse_courante,&table_etiq) != 0) { // on arrete toute la traduction et on ferme les fichiers
-            fprintf(stderr,"Erreur de syntaxe dans la ligne : %s", ligne); 
-            fclose(entree);
-            fclose(sortie);
-            return -1;
-        }
-
-        if (adresse_courante >= 500) {
-            fprintf(stderr, "Erreur : dépassement du nombre maximal d'instructions (500).\n");
+    while (fgets(ligne, sizeof(ligne), entree)) {
+        if (traduire_instruction(ligne, convertit, adresse_courante, &table_etiq) != 0) {
+            printf("\n Erreur de syntaxe dans la ligne : %s \n ", ligne);
             fclose(entree);
             fclose(sortie);
             return -1;
         }
 
         adresse_courante++;
-        fprintf(sortie, "%s\n", convertit);// changer ligne par convertit
+        fprintf(sortie, "%s\n", convertit);
     }
 
-
-    
-    // on oublie pas de fermer les fichiers utilisés pour ne pas faire d'erreurs.
     fclose(entree);
     fclose(sortie);
-    
-
     return 0;
 }
