@@ -31,6 +31,6 @@ int traduire_instruction(const char* ligne, char* convertit, int adresse_courant
 int traducteur(const char* fichier_source, const char* fichier_sortie);
 int obtenir_opcode(const char* instruction);
 int est_un_entier(const char* str);
-int valider_etiq(const char* etiq)
+int valider_etiq(const char* etiq);
 
 #endif // ASSEMBLEUR_TO_MACHINE_H
