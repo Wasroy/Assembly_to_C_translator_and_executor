@@ -1,24 +1,23 @@
-#include <stdio.h>    // Gestion des fichiers
-#include <stdlib.h>   // Fonctions générales comme malloc, exit
-#include <string.h>   // Gestion des chaînes de caractères
-#include <ctype.h> // Pour vérifier les types des variables
+#include <stdio.h>    
+#include <stdlib.h>   
+#include <string.h>   
+#include <ctype.h> // Pour vérifier des types des variables
 
-#include "assembleur_to_machine.h" // Prototypes de fonctions et constantes
+#include "assembleur_to_machine.h" 
 
-/*On utilise ici 2 passages, le premier pour sauvegarder les étiquettes et le second pour pouvoir les comparer et calculer les sauts avec */
+/*On utilise dans cette traduction 2 passages, le premier pour sauvegarder les étiquettes et le second pour pouvoir les comparer et calculer les sauts avec */
 
 
-
-CodeOperation table_opcodes[] = {
+Instruction_assembleur_et_hexa table_opcodes[] = {
     {"pop", 0x00}, {"ipop", 0x01}, {"push", 0x02}, {"ipush", 0x03}, 
     {"push#", 0x04}, {"jmp", 0x05}, {"jnz", 0x06}, {"call", 0x07}, 
-    {"ret", 0x08}, {"read", 0x09}, {"write", 0x0A}, {"op", 0x0B}, 
-    {"rnd", 0x0C}, {"dup", 0x0D}, {"halt", 0x63}
+    {"ret", 0x08}, {"read", 0x09}, {"write", 0x0A}, {"op", 0x0B},  // on code aussi en hexa les valeurs supérieur à 9 tels que 10=A ...
+    {"rnd", 0x0C}, {"dup", 0x0D}, {"halt", 0x63} 
 };
 
-int taille_opcodes = sizeof(table_opcodes) / sizeof(CodeOperation); //ou juste faire un #DEFINE TAILLEOPCODE 14 mais c plus stylé comme ça
+int taille_opcodes = sizeof(table_opcodes) / sizeof(Instruction_assembleur_et_hexa); //ou juste faire un #DEFINE TAILLEOPCODE 14 mais c plus stylé comme ça. C'est mieux pour par exemple si on veut rajouter une nouvelle instruction assembleur 
 
-// Fonction pour obtenir le code opération en hexadécimal
+// Fonction pour obtenir l'équivalent de l'instruction assembleur en hexadécimal. Globalement on parcout le tableau et on pioche dans l'équivalent opcode avec .opcode
 int obtenir_opcode(const char* instruction) {
     for (int i = 0; i < taille_opcodes; i++) {
         if (strcmp(table_opcodes[i].instruction, instruction) == 0) {
@@ -28,31 +27,38 @@ int obtenir_opcode(const char* instruction) {
     return -1; 
 }
 
-// Fonction pour vérifier si une chaîne est un entier valide
+// Fonction pour vérifier si une chaîne est un entier valide 
+
 int est_un_entier(const char* str) {
-    if (str == NULL || str[0] == '\0') {
+
+    if (str == NULL || str[0] == '\0') { // si le premier caractère est null ou vide
+        printf("La chaine n'est pas un entier valide, elle commence par un element vide");
         return 0; 
     }
 
     if (str[0] != '-' && str[0] != '+' && !isdigit(str[0])) {
+        printf("La chaine n'est pas un entier valide, elle commence par un chiffre ou un signe + / - ");
         return 0; 
     }
 
     for (int i = 1; str[i] != '\0'; i++) {
         if (!isdigit(str[i])) {
+            printf("La chaine n'est pas un entier valide, le caractère '%c' à la pos %d n'est pas un chiffre ", str[i], i);
             return 0; 
         }
     }
 
-    return 1;
+    return 1; // renvoie 1 si c'est un entier valide
 }
 
 int valider_etiq(const char* etiq) {
     if (strlen(etiq) > 30) {
+        printf("ERREUR ! L'étiquette dépasse 30 caractères \n ");
         return 0;
     }
 
     if (!isalpha(etiq[0])) {
+        printf("ATTENTION ! le premier element de l'étiquette n'est pas une lettre \n");
         return 0;
     }
 
@@ -61,10 +67,10 @@ int valider_etiq(const char* etiq) {
             return 0;
         }
     }
-    return 1;
+    return 1; // renvoie 1 si l'étiquette est valide
 }
 
-int collecter_etiq(const char* fichier_source, TableEtiquettes* table_etiq) {
+int collecter_etiq(const char* fichier_source, Tableau_detiqs* table_etiq) {
     FILE* entree = fopen(fichier_source, "r");
     if (!entree) {
         printf("\n Erreur : impossible d'ouvrir le fichier source.\n");
@@ -107,7 +113,7 @@ int collecter_etiq(const char* fichier_source, TableEtiquettes* table_etiq) {
     return 0;
 }
 
-int traduire_instruction(const char* ligne, char* convertit, int adresse_courante, TableEtiquettes* table_etiq) {
+int traduire_instruction(const char* ligne, char* convertit, int adresse_courante, Tableau_detiqs* table_etiq) {
     char etiq[30] = "";
     char instruction[20];
     char parametre[50] = "";
@@ -164,7 +170,7 @@ int traduire_instruction(const char* ligne, char* convertit, int adresse_courant
 int traducteur(const char* fichier_source, const char* fichier_sortie) {
     printf("Le traducteur a été utilisé depuis le fichier assembleur_to_machine.c ! \n");
 
-    TableEtiquettes table_etiq = {.nombre = 0};
+    Tableau_detiqs table_etiq = {.nombre = 0};
 
     if (collecter_etiq(fichier_source, &table_etiq) != 0) {
         return -1;
