@@ -15,6 +15,6 @@ void ipush(int *SP, int tab_mem[]);
 void push_i(int i, int *SP,int tab_mem[]);
 void jmp(int adr, int *PC);
 void jnz(int adr, int *PC, int *SP, int tab_mem[]);
-void call(int adr, int *pSP);
+//void call(int adr, int *pSP);
 
 #endif
