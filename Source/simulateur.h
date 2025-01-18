@@ -7,14 +7,14 @@ typedef struct {
 } instruction; 
 
 int nombreDeLigne(const char* nomfichier);
-void save_code(int tab[], int nligne, instruction* ptr);
-void pop(int x, int *SP);
-void ipop(int *SP);
-void push(int x, tab[], int *SP);
-void ipush(int *SP);
-void push_i (int i, int *SP);
+void savecode(instruction* tab[], int nligne, const char*nomfichier);
+void pop(int x, int *SP, int tab_mem[]);
+void ipop(int *SP, int tab_mem[]);
+void push(int x,int tab_mem[], int *SP);
+void ipush(int *SP, int tab_mem[]);
+void push_i(int i, int *SP,int tab_mem[]);
 void jmp(int adr, int *PC);
-void jnz(int adr, int *PC, int *SP);
-void call(int adr);
+void jnz(int adr, int *PC, int *SP, int tab_mem[]);
+void call(int adr, int *pSP);
 
 #endif

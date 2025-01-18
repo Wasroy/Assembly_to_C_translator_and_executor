@@ -1,10 +1,12 @@
 #include <stdio.h>
-#include "assembleur_to_machine.h"
-#include "assembleur_to_machine.c"
+#include <stdlib.h>
+#include <string.h>
+//#include "assembleur_to_machine.h"
+//#include "assembleur_to_machine.c"
 #include "simulateur.h"
-#include "simulateur.c"
 
-#define MEM_SIZE = 5000
+
+#define MEM_SIZE  5000
 
 int tab_mem[MEM_SIZE] = {0};
 int PC = 0; 
@@ -12,8 +14,9 @@ int SP = 0;
 int *pPC = &PC;
 int *pSP = &SP;   
 
+
 int main() {
-    printf("Le fichier a été créé ! oeoeoeoe\n");
+    /*printf("Le fichier a été créé ! oeoeoeoe\n");
 
     // faudra demander a l'utilisateur le chemin du fichier que l'on veut traduire.
 
@@ -22,17 +25,20 @@ int main() {
 
     return traducteur(fichier_assembleur, fichier_traduit_en_hexa);
 
-    // DEBUT DE LA MASTERCLASS ICI MEME // 
-    char nomfichier[] = hexa.txt;
-    FILE * sortie = fopen(sortie, 'r'); // PAS NECESSAIRE
+    // DEBUT DE LA MASTERCLASS ICI MEME // */
+    const char *nomfichier = "Exemple_de_code_hexadecimal.txt";
+    //FILE * sortie = fopen(sortie, 'r'); // PAS NECESSAIRE
     //Chaque ligne seront assignée à un élément de la structure instruction. On veut un tableau d'instruction de meme nombre déléments qu'il n'y a de ligne
 
-    int nb_ligne = nombreDeLigne(hexa.txt);
-    instruction** tab_ins[] = malloc(sizeof(instruction)*nb_ligne); 
-    savecode(tab_ins, hexa.txt, nb_ligne);
+    int nb_ligne = nombreDeLigne(nomfichier);
+    instruction** tab_ins = malloc(sizeof(instruction*)*nb_ligne); 
+    savecode(tab_ins, nb_ligne, nomfichier);
     
+    for (int i=0; i<nb_ligne; i++) {
+        printf(" Code instruction : %d, Code donnée : %d", tab_ins[i]->opcode, tab_ins[i]->donnee);
+    }
     
-    
+
 
     return 0;
 }

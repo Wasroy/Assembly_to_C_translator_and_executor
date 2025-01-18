@@ -1,11 +1,13 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "simulateur.h"
 
-int nombreDeLigne(const char* nomfichier){  /*Récupérer la longeur max des lignes*/
+int nombreDeLigne(const char* nomfichier) {  /*Récupérer la longeur max des lignes*/
 	FILE* file = fopen(nomfichier,"r");
      if (file == NULL) {
         perror("Erreur lors de l'ouverture du fichier");
-        return;
+        return 6;
     }
 	int NbDeLigne = 0;
 	char c;
@@ -13,19 +15,18 @@ int nombreDeLigne(const char* nomfichier){  /*Récupérer la longeur max des lig
 		if(c == '\n') NbDeLigne += 1; /* Le \n est le caractère de fin de ligne, il figure donc même sur la dernière */
 		}
 	fclose(file);
-	if (NbDeLigne == 0){
-		annonceErreur();
+	if (NbDeLigne == 0) {
 		printf("Fichier vide\n");
-		exit(1);
+		return 5;
 		}
 	return NbDeLigne;
-	}
+}
     
-void save_code(instruction* tab[], int nligne, const char*nomfichier) {
+void savecode (instruction* tab[], int nligne, const char*nomfichier) {
     FILE *file = fopen(nomfichier, "r");
     if (file == NULL) {
         perror("Erreur lors de l'ouverture du fichier");
-        return;
+        exit(EXIT_FAILURE);
     }
     char ligne[8];
     for (int i=0; i < nligne; i++) {
@@ -45,15 +46,16 @@ void save_code(instruction* tab[], int nligne, const char*nomfichier) {
     fclose(file);
 }  
 
-void pop(int x, int *SP){
+void pop(int x, int *SP, int tab_mem[]) {
     if (*SP == 0) {
         printf("Erreur : Débordement négatif de la pile (pile vide).\n");
-        exit(EXIT_FAILURE);}
+        exit(EXIT_FAILURE);
+    }
     tab_mem[x] = tab_mem[*SP];
     (*SP)--;
 }   
 
-void ipop(int *SP) {
+void ipop(int *SP, int tab_mem[]) {
      if (*SP < 2) {
         printf("Erreur : Débordement négatif de la pile (pile vide).\n");
         exit(EXIT_FAILURE);}
@@ -61,22 +63,22 @@ void ipop(int *SP) {
     *SP = (*SP)-2;
 }
 
-void push(int x, tab[], int *SP) {
+void push(int x,int tab_mem[], int *SP) {
     if (*SP == 4999) {
         printf("Erreur : Débordement de la pile (pile pleine).\n");
         exit(EXIT_FAILURE);}
-    tab_mem[SP] = tab_mem[x];
+    tab_mem[*SP] = tab_mem[x];
     (*SP)++; 
 }
 
-void ipush(int *SP) {
+void ipush(int *SP, int tab_mem[]) {
     if (*SP == 4999) {
         printf("Erreur : Débordement de la pile (pile pleine).\n");
         exit(EXIT_FAILURE);}
     tab_mem[*SP-1] = tab_mem[tab_mem[*SP-1]];
 }
 
-void push_i (int i, int *SP) {
+void push_i (int i, int *SP, int tab_mem[]) {
     if (*SP == 4999) {
         printf("Erreur : Débordement de la pile (pile pleine).\n");
         exit(EXIT_FAILURE);}
@@ -88,18 +90,19 @@ void jmp(int adr, int *PC){
     *PC = (*PC) + adr; 
 }   
 
-void jnz(int adr, int *PC, int *SP) {
-    if (*SP == 0) {
+void jnz(int adr, int *PC, int *pSP, int tab_mem[]) {
+    if (*pSP == 0) {
         printf("Erreur : Débordement négatif de la pile (pile vide).\n");
         exit(EXIT_FAILURE);}
-    if (tab_mem[SP-1] == 0) 
+    if (tab_mem[*pSP-1] == 0) 
         *PC += adr;
-    (*SP)--   
+    (*pSP)-- ; 
 }
  
-void call(int adr) {
-     if (*SP == 4999) {
+/*void call(int adr, int*pSP) {
+     if (*pSP == 4999) {
         printf("Erreur : Débordement de la pile (pile pleine).\n");
         exit(EXIT_FAILURE);}
-    tab_mem[SP]
+    tab_mem[*pSP];
 }
+*/
