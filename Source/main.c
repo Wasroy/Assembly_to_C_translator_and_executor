@@ -26,19 +26,20 @@ int main() {
     return traducteur(fichier_assembleur, fichier_traduit_en_hexa);
 
     // DEBUT DE LA MASTERCLASS ICI MEME // */
-    const char *nomfichier = "Exemple_de_code_hexadecimal.txt";
+    const char *nomfichier = "hexa.txt";
+
     //FILE * sortie = fopen(sortie, 'r'); // PAS NECESSAIRE
     //Chaque ligne seront assignée à un élément de la structure instruction. On veut un tableau d'instruction de meme nombre déléments qu'il n'y a de ligne
 
     int nb_ligne = nombreDeLigne(nomfichier);
-    instruction** tab_ins = malloc(sizeof(instruction*)*nb_ligne); 
-    savecode(tab_ins, nb_ligne, nomfichier);
-    
-    for (int i=0; i<nb_ligne; i++) {
-        printf(" Code instruction : %d, Code donnée : %d", tab_ins[i]->opcode, tab_ins[i]->donnee);
-    }
-    
+    printf("%d\n", nb_ligne);
+    instruction** tab_ins = (instruction **)malloc(sizeof(instruction*) * (nb_ligne+1)); 
+    savecode(tab_ins, nb_ligne, nomfichier);    
+    printf("ZIZI D'UNE TAILLE TITANESQUE\n");
 
+    for (int i=0; i<=nb_ligne; i++) {
+        printf(" Code instruction : %d, Code donnee : %d\n", tab_ins[i]->opcode, tab_ins[i]->donnee);
+    }
 
     return 0;
 }

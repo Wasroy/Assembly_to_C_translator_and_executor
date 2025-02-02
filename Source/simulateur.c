@@ -3,44 +3,55 @@
 #include <string.h>
 #include "simulateur.h"
 
-int nombreDeLigne(const char* nomfichier) {  /*Récupérer la longeur max des lignes*/
+int nombreDeLigne(const char* nomfichier) {  
 	FILE* file = fopen(nomfichier,"r");
-     if (file == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
-        return 6;
-    }
-	int NbDeLigne = 0;
-	char c;
-	while((c = fgetc(file)) != EOF){
-		if(c == '\n') NbDeLigne += 1; /* Le \n est le caractère de fin de ligne, il figure donc même sur la dernière */
-		}
-	fclose(file);
-	if (NbDeLigne == 0) {
-		printf("Fichier vide\n");
-		return 5;
-		}
-	return NbDeLigne;
-}
-    
-void savecode (instruction* tab[], int nligne, const char*nomfichier) {
-    FILE *file = fopen(nomfichier, "r");
     if (file == NULL) {
         perror("Erreur lors de l'ouverture du fichier");
         exit(EXIT_FAILURE);
     }
-    char ligne[8];
-    for (int i=0; i < nligne; i++) {
-        fgets(ligne, 8, file); 
-        char s_opcode[3];  
-        char s_donnee[5];  
 
+	int NbDeLigne = 0;
+	char c;
+	while((c = fgetc(file)) != EOF){
+		if(c == '\n') NbDeLigne ++; /* Le \n est le caractère de fin de ligne, il figure donc même sur la dernière */
+		}
+	fclose(file);
+	if (NbDeLigne == 0) {
+		printf("Fichier vide\n");
+		}
+	return NbDeLigne;
+}
+    
+void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
+    FILE *file = fopen(nomfichier, "r");
+    if (file == NULL) {
+        perror("Erreur lors de l'ouverture du fichier");
+        exit(EXIT_FAILURE);
+    }    
+    // Lecture du fichier et remplissage du tableau
+    char s_opcode[3] = {0};
+    char s_donnee[5] = {0};
+    char ligne[10];
+    int i = 0; 
+    while (fgets(ligne, 10, file) != NULL){
+        printf("i = %d\n", i);
+        
         strncpy(s_opcode, ligne, 2);
         s_opcode[2] = '\0'; 
-        strncpy(s_donnee, ligne + 4, 4); 
+        strncpy(s_donnee, ligne + 3, 4); 
         s_donnee[4] = '\0'; 
+        
+        tab[i] = (instruction *)malloc(sizeof(instruction));
+        if (tab[i] == NULL){
+			printf("Une allocation mémoire n'a pas pu être effectué \n");
+			exit(1);
+			}
 
         tab[i]->opcode = (int)strtol(s_opcode, NULL, 16);  
         tab[i]->donnee = (int)strtol(s_donnee, NULL, 16);
+
+        printf("Code : %d , Donnee : %d\n", tab[i]->opcode, tab[i]->donnee);
+        i++;
     }
 
     fclose(file);
