@@ -13,11 +13,12 @@ int nombreDeLigne(const char* nomfichier) {
 	int NbDeLigne = 0;
 	char c;
 	while((c = fgetc(file)) != EOF){
-		if(c == '\n') NbDeLigne ++; /* Le \n est le caractère de fin de ligne, il figure donc même sur la dernière */
+		if(c == '\n') NbDeLigne +=1; /* Le \n est le caractère de fin de ligne, il figure donc même sur la dernière */
 		}
 	fclose(file);
 	if (NbDeLigne == 0) {
 		printf("Fichier vide\n");
+        exit(1);
 		}
 	return NbDeLigne;
 }
@@ -34,7 +35,6 @@ void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
     char ligne[10];
     int i = 0; 
     while (fgets(ligne, 10, file) != NULL){
-        printf("i = %d\n", i);
         
         strncpy(s_opcode, ligne, 2);
         s_opcode[2] = '\0'; 
@@ -50,7 +50,6 @@ void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
         tab[i]->opcode = (int)strtol(s_opcode, NULL, 16);  
         tab[i]->donnee = (int)strtol(s_donnee, NULL, 16);
 
-        printf("Code : %d , Donnee : %d\n", tab[i]->opcode, tab[i]->donnee);
         i++;
     }
 
