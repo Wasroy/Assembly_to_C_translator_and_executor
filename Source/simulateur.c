@@ -109,10 +109,15 @@ void jnz(int adr, int *PC, int *pSP, int tab_mem[]) {
     (*pSP)-- ; 
 }
  
-/*void call(int adr, int*pSP) {
+void call(int tab_mem[], int adr, int* pSP, int* pPC) {
      if (*pSP == 4999) {
         printf("Erreur : Débordement de la pile (pile pleine).\n");
         exit(EXIT_FAILURE);}
-    tab_mem[*pSP];
+    tab_mem[*pSP] = *pPC;
+    *pPC += adr;
 }
-*/
+
+void ret (int tab_mem[], int *pSP, int* pPC) {
+    if(tab_mem[*pSP] = *pPC); 
+    
+}
