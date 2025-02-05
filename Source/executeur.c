@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "simulateur.h"
+#include "executeur.h"
 
 int nombreDeLigne(const char* nomfichier) {  
 	FILE* file = fopen(nomfichier,"r");
