@@ -138,7 +138,79 @@ void op(int tab_mem[], int *pSP, int i) {
                 tab_mem[*pSP] = 1;
             else 
                 tab_mem[*pSP] = 0;     
+        case 1: 
+            (*pSP)--;
+            if (tab_mem[*pSP] == tab_mem[*pSP-1]) 
+                tab_mem[*pSP] = 0;
+            else 
+                tab_mem[*pSP] = 1;   
+        case 2: 
+            (*pSP)--;
+            if (tab_mem[*pSP - 1] >= tab_mem[*pSP])
+                tab_mem[*pSP] = 1;
+            else 
+                tab_mem[*pSP] = 0;
+        case 3: 
+            (*pSP)--;
+            if (tab_mem[*pSP - 1] <= tab_mem[*pSP])
+                tab_mem[*pSP] = 1;
+            else 
+                tab_mem[*pSP] = 0;
+        case 4: 
+            (*pSP)--;
+            if (tab_mem[*pSP - 1] > tab_mem[*pSP])
+                tab_mem[*pSP] = 1;
+            else 
+                tab_mem[*pSP] = 0;
+        case 5: 
+            (*pSP)--;
+            if (tab_mem[*pSP - 1] < tab_mem[*pSP])
+                tab_mem[*pSP] = 1;
+            else 
+                tab_mem[*pSP] = 0;
+        case 6: 
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) | (tab_mem[*pSP]);
+        case 7: 
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) ^ (tab_mem[*pSP]); 
+        case 8: 
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) & (tab_mem[*pSP]);
+        case 9: 
+            (tab_mem[*pSP-1]) = ~(tab_mem[*pSP-1]);
+        case 10: 
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) + (tab_mem[*pSP]);
+        case 11: 
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) - (tab_mem[*pSP]);
+        case 12:
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) * (tab_mem[*pSP]);
+        case 13:
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) / (tab_mem[*pSP]);
+        case 14:
+            (*pSP)--;
+            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) % (tab_mem[*pSP]);
+        case 15: 
+            (tab_mem[*pSP-1]) = -(tab_mem[*pSP-1]);
     }
+}
+
+void rnd(int tab_mem[], int *pSP, int x) {
+    tab_mem[*pSP] = rand() % x; //rand() % x (bibliothèque stdlib) renvoie un nombre aléatoire entre 0 et x-1
+    (*pSP)++;
+}
+
+void dup(int tab_mem[], int *pSP) {
+    if (*pSP == 4999) {
+        printf("Erreur : Débordement de la pile (pile pleine).\n");
+        exit(EXIT_FAILURE);
+    }
+    tab_mem[*pSP] = tab_mem[*pSP-1];
+    (*pSP)++;
 }
 
 void halt() {
