@@ -40,10 +40,15 @@ int main() {
         printf(" Code instruction : %d, Code donnee : %d\n", tab_ins[i]->opcode, tab_ins[i]->donnee);
     }
     
-    while (PC < nb_ligne) {
-        printf("PC = %d\n", PC);
+    while (*pPC < nb_ligne) {
+        (*pPC)++;
+        printf("PC = %d\n", *pPC);
+
         executeligne(tab_mem, pSP, pPC, tab_ins);
+        printf("Executeligne fais correctement\n");
     }
+
+    printf("tab_mem[1000] = %d\n", tab_mem[1000]);
 
     for (int i=0; i<1000; i++) {
             printf("tab_mem[%d] = %d\n", i, tab_mem[i]);}
@@ -52,4 +57,3 @@ int main() {
 
     return 0;
 }
-
