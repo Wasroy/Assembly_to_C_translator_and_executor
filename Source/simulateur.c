@@ -118,6 +118,29 @@ void call(int tab_mem[], int adr, int* pSP, int* pPC) {
 }
 
 void ret (int tab_mem[], int *pSP, int* pPC) {
-    if(tab_mem[*pSP] = *pPC); 
-    
+    *pPC = tab_mem[*pSP]; 
+    (*pSP)--;
+}
+
+void write(int tab_mem[], int adr) {
+    if (adr < 0 || adr > 4999) {
+        printf("Erreur : Adresse invalide.\n");
+        exit(EXIT_FAILURE);
+    }
+    printf("La valeur contenue à l'adresse %d est %d\n",adr, tab_mem[adr]);
+}
+
+void op(int tab_mem[], int *pSP, int i) {
+    switch (i) {    
+        case 0: 
+            (*pSP)--;
+            if (tab_mem[*pSP] == tab_mem[*pSP-1]) 
+                tab_mem[*pSP] = 1;
+            else 
+                tab_mem[*pSP] = 0;     
+    }
+}
+
+void halt() {
+    exit(EXIT_SUCCESS);
 }
