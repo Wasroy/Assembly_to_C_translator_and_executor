@@ -3,6 +3,58 @@
 #include <string.h>
 #include "executeur.h"
 
+
+
+void executeligne(int tab_mem[], int *pSP, int *pPC, instruction **tab_ins) {
+    switch (tab_ins[*pPC]->opcode) {
+        case 0: 
+            (*pPC)++;
+            pop(tab_ins[*pPC - 1]->donnee, pSP, tab_mem);
+        case 1: 
+            (*pPC)++;
+            ipop(pSP, tab_mem);
+        case 2:
+            (*pPC)++;
+            push(tab_ins[*pPC - 1]->donnee, tab_mem, pSP);
+        case 3:
+            (*pPC)++;
+            ipush(pSP, tab_mem);
+        case 4: 
+            (*pPC)++;
+            push_i(tab_ins[*pPC - 1]->donnee, pSP, tab_mem);
+        case 5: 
+            (*pPC)++;
+            jmp(tab_ins[*pPC - 1]->donnee, pPC);
+        case 6: 
+            (*pPC)++;
+            jnz(tab_ins[*pPC - 1]->donnee, pPC, pSP, tab_mem);
+        case 7: 
+            (*pPC)++;
+            call(tab_mem, tab_ins[*pPC - 1]->donnee, pSP, pPC);
+        case 8: 
+            (*pPC)++;
+            ret(tab_mem, pSP, pPC);
+        case 9: 
+            (*pPC)++;
+            read(tab_mem, tab_ins[*pPC - 1]->donnee);
+        case 10: 
+            (*pPC)++;
+            write(tab_mem, tab_ins[*pPC - 1]->donnee);
+        case 11:
+            (*pPC)++;
+            op(tab_mem, pSP, tab_ins[*pPC - 1]->donnee);
+        case 12: 
+            (*pPC)++;
+            rnd(tab_mem, pSP, tab_ins[*pPC - 1]->donnee);
+        case 13: 
+            (*pPC)++;
+            dup(tab_mem, pSP);
+        case 14: 
+            halt();
+    }
+}
+
+
 int nombreDeLigne(const char* nomfichier) {  
 	FILE* file = fopen(nomfichier,"r");
     if (file == NULL) {
@@ -121,6 +173,18 @@ void ret (int tab_mem[], int *pSP, int* pPC) {
     *pPC = tab_mem[*pSP]; 
     (*pSP)--;
 }
+
+void read(int tab_mem[], int adr) {
+    if (adr < 0 || adr > 4999) {
+        printf("Erreur : Adresse invalide.\n");
+        exit(EXIT_FAILURE);
+    }
+    int x;
+    printf("Entrez une valeur : ");
+    scanf("%d", &x);
+    tab_mem[adr] = x;
+}
+
 
 void write(int tab_mem[], int adr) {
     if (adr < 0 || adr > 4999) {

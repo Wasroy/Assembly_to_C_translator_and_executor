@@ -3,7 +3,7 @@
 #include <string.h>
 //#include "assembleur_to_machine.h"
 //#include "assembleur_to_machine.c"
-#include "simulateur.h"
+#include "executeur.h"
 
 
 #define MEM_SIZE  5000
@@ -39,8 +39,16 @@ int main() {
     for (int i=0; i<nb_ligne; i++) {
         printf(" Code instruction : %d, Code donnee : %d\n", tab_ins[i]->opcode, tab_ins[i]->donnee);
     }
-
     
+    while (PC < nb_ligne) {
+        printf("PC = %d\n", PC);
+        executeligne(tab_mem, pSP, pPC, tab_ins);
+    }
+
+    for (int i=0; i<1000; i++) {
+            printf("tab_mem[%d] = %d\n", i, tab_mem[i]);}
+
+    free(tab_ins);
 
     return 0;
 }
