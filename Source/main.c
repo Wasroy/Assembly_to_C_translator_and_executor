@@ -50,7 +50,7 @@ int main() {
 
     printf("tab_mem[1000] = %d\n", tab_mem[1000]);
 
-    for (int i=0; i<1000; i++) {
+    for (int i=0; i<10; i++) {
             printf("tab_mem[%d] = %d\n", i, tab_mem[i]);}
 
     free(tab_ins);

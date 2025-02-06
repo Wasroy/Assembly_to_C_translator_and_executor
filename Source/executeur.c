@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "executeur.h"
 
 void executeligne(int tab_mem[], int *pSP, int *pPC, instruction **tab_ins) {
@@ -97,9 +98,21 @@ void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
 			printf("Une allocation mémoire n'a pas pu être effectué \n");
 			exit(1);
 			}
+        int a = (int)strtol(s_opcode, NULL, 16);
+        
+        int b = (int)strtol(s_donnee, NULL, 16);
+        printf("b = %d, i = %d\n", b, i);
+        if (a>32767) {
+            tab[i]->opcode = a - 65536;}
+        else {tab[i]->opcode = a;}
+        
+        if (b>32767) {
+            tab[i]->donnee = b - 65536;}
+        else {tab[i]->donnee = b;}
 
-        tab[i]->opcode = (int)strtol(s_opcode, NULL, 16);  
-        tab[i]->donnee = (int)strtol(s_donnee, NULL, 16);
+        printf("tab[%d]->donnee = %d\n",i, tab[i]->donnee);
+      
+        
 
         i++;
     }
@@ -161,11 +174,14 @@ void jnz(int adr, int *PC, int *pSP, int tab_mem[]) {
     if (*pSP == 0) {
         printf("Erreur : Débordement négatif de la pile (pile vide).\n");
         exit(EXIT_FAILURE);}
-    if (tab_mem[*pSP-1] == 0) 
+    if (tab_mem[*pSP-1] == 0) {
         *PC += adr;
-        printf("On saute à l'adresse %d car cette adresse est nulle \n", *PC);
+        printf("On saute à l'adresse %d car cette adresse est nulle \n", *PC, tab_mem[*pSP-1]);}
+    else {
+        int a = *PC + adr;
+        printf("On ne saute pas à l'adresse %d car cette adresse est non nulle \n", a);}
     (*pSP)-- ; 
-    printf("On ne saute pas à l'adresse %d car cette adresse est non nulle \n", *PC);
+    
 }
  
 void call(int tab_mem[], int adr, int* pSP, int* pPC) {
@@ -213,64 +229,80 @@ void op(int tab_mem[], int *pSP, int i) {
                 tab_mem[*pSP] = 1;
             else 
                 tab_mem[*pSP] = 0;     
+            break;
         case 1: 
             (*pSP)--;
             if (tab_mem[*pSP] == tab_mem[*pSP-1]) 
                 tab_mem[*pSP] = 0;
             else 
                 tab_mem[*pSP] = 1;   
+            break;
         case 2: 
             (*pSP)--;
             if (tab_mem[*pSP - 1] >= tab_mem[*pSP])
                 tab_mem[*pSP] = 1;
             else 
                 tab_mem[*pSP] = 0;
+            break;
         case 3: 
             (*pSP)--;
             if (tab_mem[*pSP - 1] <= tab_mem[*pSP])
                 tab_mem[*pSP] = 1;
             else 
                 tab_mem[*pSP] = 0;
+            break;
         case 4: 
             (*pSP)--;
             if (tab_mem[*pSP - 1] > tab_mem[*pSP])
                 tab_mem[*pSP] = 1;
             else 
                 tab_mem[*pSP] = 0;
+            break;
         case 5: 
             (*pSP)--;
             if (tab_mem[*pSP - 1] < tab_mem[*pSP])
                 tab_mem[*pSP] = 1;
             else 
                 tab_mem[*pSP] = 0;
+            break;
         case 6: 
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) | (tab_mem[*pSP]);
+            break;
         case 7: 
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) ^ (tab_mem[*pSP]); 
+            break;
         case 8: 
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) & (tab_mem[*pSP]);
+            break;
         case 9: 
             (tab_mem[*pSP-1]) = ~(tab_mem[*pSP-1]);
+            break;
         case 10: 
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) + (tab_mem[*pSP]);
+            break;
         case 11: 
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) - (tab_mem[*pSP]);
+            break;
         case 12:
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) * (tab_mem[*pSP]);
+            break;
         case 13:
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) / (tab_mem[*pSP]);
+            break;
         case 14:
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) % (tab_mem[*pSP]);
+            break;
         case 15: 
             (tab_mem[*pSP-1]) = -(tab_mem[*pSP-1]);
+            break;
     printf("Operation correctement effectuée\n");
     }
 }
