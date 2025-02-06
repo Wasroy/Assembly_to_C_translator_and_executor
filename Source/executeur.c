@@ -7,48 +7,48 @@
 void executeligne(int tab_mem[], int *pSP, int *pPC, instruction **tab_ins) {
     switch (tab_ins[(*pPC)-1]->opcode) {
         case 0: 
-            pop(tab_ins[*pPC - 1]->donnee, pSP, tab_mem);
+            pop(tab_ins[*pPC-1]->donnee, pSP, tab_mem);
             break;
         case 1: 
             ipop(pSP, tab_mem);
             break;
         case 2:
-            push(tab_ins[*pPC - 1]->donnee, tab_mem, pSP);
+            push(tab_ins[*pPC-1]->donnee, tab_mem, pSP);
             break;
         case 3:
             ipush(pSP, tab_mem);
             break;
         case 4: 
-            push_i(tab_ins[*pPC - 1]->donnee, pSP, tab_mem);
+            push_i(tab_ins[*pPC-1]->donnee, pSP, tab_mem);
             break;
         case 5: 
-            jmp(tab_ins[*pPC - 1]->donnee, pPC);
+            jmp(tab_ins[*pPC-1]->donnee, pPC, tab_mem);
             break;
         case 6: 
-            jnz(tab_ins[*pPC - 1]->donnee, pPC, pSP, tab_mem);
+            jnz(tab_ins[*pPC-1]->donnee, pPC, pSP, tab_mem);
             break;
         case 7: 
-            call(tab_mem, tab_ins[*pPC - 1]->donnee, pSP, pPC);
+            call(tab_mem, tab_ins[*pPC-1]->donnee, pSP, pPC);
             break;
         case 8: 
             ret(tab_mem, pSP, pPC);
             break;
         case 9: 
-            read(tab_mem, tab_ins[*pPC - 1]->donnee);
+            read(tab_mem, tab_ins[*pPC-1]->donnee);
             break;
         case 10: 
-            write(tab_mem, tab_ins[*pPC - 1]->donnee);
+            write(tab_mem, tab_ins[*pPC-1]->donnee);
             break;
         case 11:
-            op(tab_mem, pSP, tab_ins[*pPC - 1]->donnee);
+            op(tab_mem, pSP, tab_ins[*pPC-1]->donnee);
             break;
         case 12: 
-            rnd(tab_mem, pSP, tab_ins[*pPC - 1]->donnee);
+            rnd(tab_mem, pSP, tab_ins[*pPC-1]->donnee);
             break;
         case 13: 
             dup(tab_mem, pSP);
             break;
-        case 14: 
+        case 99: 
             halt();
             break;
     }
@@ -101,7 +101,7 @@ void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
         int a = (int)strtol(s_opcode, NULL, 16);
         
         int b = (int)strtol(s_donnee, NULL, 16);
-        printf("b = %d, i = %d\n", b, i);
+
         if (a>32767) {
             tab[i]->opcode = a - 65536;}
         else {tab[i]->opcode = a;}
@@ -109,11 +109,6 @@ void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
         if (b>32767) {
             tab[i]->donnee = b - 65536;}
         else {tab[i]->donnee = b;}
-
-        printf("tab[%d]->donnee = %d\n",i, tab[i]->donnee);
-      
-        
-
         i++;
     }
 
@@ -125,9 +120,9 @@ void pop(int x, int *SP, int tab_mem[]) {
         printf("Erreur : Débordement négatif de la pile (pile vide).\n");
         exit(EXIT_FAILURE);
     }
-    tab_mem[x] = tab_mem[*SP];
+    tab_mem[x] = tab_mem[*SP-1];
     (*SP)--;
-    printf("On a pop la valeur %d\n", tab_mem[x]);
+    //printf("On a pop la valeur %d\n", tab_mem[x]);
 }   
 
 void ipop(int *SP, int tab_mem[]) {
@@ -136,7 +131,7 @@ void ipop(int *SP, int tab_mem[]) {
         exit(EXIT_FAILURE);}
     tab_mem[tab_mem[*SP-1]] = tab_mem[*SP-2];
     *SP = (*SP)-2;
-    printf("On a pop la valeur %d\n", tab_mem[tab_mem[*SP-1]]);
+    //printf("On a pop la valeur %d\n", tab_mem[tab_mem[*SP-1]]);
 }
 
 void push(int x,int tab_mem[], int *SP) {
@@ -145,7 +140,7 @@ void push(int x,int tab_mem[], int *SP) {
         exit(EXIT_FAILURE);}
     tab_mem[*SP] = tab_mem[x];
     (*SP)++; 
-    printf("On a mis en haut de la pile la valeur %d\n", tab_mem[x]);
+    //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[x]);
 }
 
 void ipush(int *SP, int tab_mem[]) {
@@ -153,7 +148,7 @@ void ipush(int *SP, int tab_mem[]) {
         printf("Erreur : Débordement de la pile (pile pleine).\n");
         exit(EXIT_FAILURE);}
     tab_mem[*SP-1] = tab_mem[tab_mem[*SP-1]];
-    printf("On a mis en haut de la pile la valeur %d\n", tab_mem[tab_mem[*SP-1]]);
+    //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[tab_mem[*SP-1]]);
 }
 
 void push_i (int i, int *SP, int tab_mem[]) {
@@ -162,12 +157,13 @@ void push_i (int i, int *SP, int tab_mem[]) {
         exit(EXIT_FAILURE);}
     tab_mem[*SP] = i;
     (*SP)++;
-    printf("On a mis en haut de la pile la valeur %d\n", i);
+    //printf("On a mis en haut de la pile la valeur %d\n", i);
 }
 
-void jmp(int adr, int *PC){
+void jmp(int adr, int *PC, int tab_mem[]){
     *PC = (*PC) + adr; 
-    printf("On saute à l'adresse %d\n", *PC);
+
+    //printf("On saute à l'adresse %d(JMP)\n", *PC);
 }   
 
 void jnz(int adr, int *PC, int *pSP, int tab_mem[]) {
@@ -175,11 +171,11 @@ void jnz(int adr, int *PC, int *pSP, int tab_mem[]) {
         printf("Erreur : Débordement négatif de la pile (pile vide).\n");
         exit(EXIT_FAILURE);}
     if (tab_mem[*pSP-1] == 0) {
-        *PC += adr;
-        printf("On saute à l'adresse %d car cette adresse est nulle \n", *PC, tab_mem[*pSP-1]);}
+        *PC += adr;}
+        //printf("On saute à l'adresse %d car cette adresse est nulle (JNZ)\n", *PC, tab_mem[*pSP-1]);
     else {
-        int a = *PC + adr;
-        printf("On ne saute pas à l'adresse %d car cette adresse est non nulle \n", a);}
+        int a = *PC + adr;}
+        //printf("On ne saute pas à l'adresse %d car cette adresse est non nulle (JNZ) \n", a);}
     (*pSP)-- ; 
     
 }
@@ -190,17 +186,18 @@ void call(int tab_mem[], int adr, int* pSP, int* pPC) {
         exit(EXIT_FAILURE);}
     tab_mem[*pSP] = *pPC;
     *pPC += adr;
-    printf("Rien compris à la fonction mais on l'a effectuée\n");
+    //printf("Rien compris à la fonction mais on l'a effectuée\n");
     
 }
 
 void ret (int tab_mem[], int *pSP, int* pPC) {
     *pPC = tab_mem[*pSP]; 
     (*pSP)--;
-    printf("Rien compris à la fonction mais on l'a effectuée\n");
+    //printf("Rien compris à la fonction mais on l'a effectuée\n");
 }
 
 void read(int tab_mem[], int adr) {
+
     if (adr < 0 || adr > 4999) {
         printf("Erreur : Adresse invalide.\n");
         exit(EXIT_FAILURE);
@@ -209,7 +206,7 @@ void read(int tab_mem[], int adr) {
     printf("Entrez une valeur : ");
     scanf("%d", &x);
     tab_mem[adr] = x;
-    printf("La valeur %d a été stockée à l'adresse %d\n", x, adr);
+    //printf("La valeur %d a été stockée à l'adresse %d\n", x, adr);
 }
 
 
@@ -218,7 +215,7 @@ void write(int tab_mem[], int adr) {
         printf("Erreur : Adresse invalide.\n");
         exit(EXIT_FAILURE);
     }
-    printf("La valeur contenue à l'adresse %d est %d.\nwrite() correctement effectué\n",adr, tab_mem[adr]);
+    printf("La valeur contenue a l'adresse %d est %d.\n",adr, tab_mem[adr]);
 }
 
 void op(int tab_mem[], int *pSP, int i) {
@@ -302,15 +299,16 @@ void op(int tab_mem[], int *pSP, int i) {
             break;
         case 15: 
             (tab_mem[*pSP-1]) = -(tab_mem[*pSP-1]);
+            
             break;
-    printf("Operation correctement effectuée\n");
+    //printf("Operation correctement effectuée\n");
     }
 }
 
 void rnd(int tab_mem[], int *pSP, int x) {
     tab_mem[*pSP] = rand() % x; //rand() % x (bibliothèque stdlib) renvoie un nombre aléatoire entre 0 et x-1
     (*pSP)++;
-    printf("On a mis en haut de la pile la valeur %d\n", tab_mem[*pSP]);
+    //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[*pSP]);
 }
 
 void dup(int tab_mem[], int *pSP) {
@@ -320,7 +318,7 @@ void dup(int tab_mem[], int *pSP) {
     }
     tab_mem[*pSP] = tab_mem[*pSP-1];
     (*pSP)++;
-    printf("On a dupliqué la valeur %d\n", tab_mem[*pSP]);
+    //printf("On a dupliqué la valeur %d\n", tab_mem[*pSP]);
 }
 
 void halt() {

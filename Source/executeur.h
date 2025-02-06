@@ -14,7 +14,7 @@ void ipop(int *SP, int tab_mem[]);
 void push(int x,int tab_mem[], int *SP);
 void ipush(int *SP, int tab_mem[]);
 void push_i(int i, int *SP,int tab_mem[]);
-void jmp(int adr, int *PC);
+void jmp(int adr, int *PC, int tab_mem[]);
 void jnz(int adr, int *PC, int *SP, int tab_mem[]);
 void call(int tab_mem[], int adr, int* pSP, int* pPC);
 void ret(int tab_mem[], int *pSP, int* pPC);
