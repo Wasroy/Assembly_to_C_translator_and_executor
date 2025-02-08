@@ -26,7 +26,7 @@ int main() {
     return traducteur(fichier_assembleur, fichier_traduit_en_hexa);
 
     // DEBUT DE LA MASTERCLASS ICI MEME // */
-    const char *nomfichier = "hexasujet.txt";
+    const char *nomfichier = "hexasomme.txt";
 
     //FILE * sortie = fopen(sortie, 'r'); // PAS NECESSAIRE
     //Chaque ligne seront assignée à un élément de la structure instruction. On veut un tableau d'instruction de meme nombre déléments qu'il n'y a de ligne
@@ -34,7 +34,23 @@ int main() {
     int nb_ligne = nombreDeLigne(nomfichier) + 1;
     
     instruction** tab_ins = (instruction **)malloc(sizeof(instruction*) * (nb_ligne)); 
-    savecode(tab_ins, nb_ligne-1, nomfichier);    
+    savecode(tab_ins, nomfichier);    
+
+    //Detection d'une possible erreur : si il existe un call sans ret ou un ret sans call
+    int nb_call = 0;
+    int nb_ret = 0;
+    for (int i = 0; i < nb_ligne; i++) {
+        if (tab_ins[i]->opcode == 7) {
+            nb_call++;
+        }
+        if (tab_ins[i]->opcode == 8) {
+            nb_ret++;
+        }
+    }
+    if (nb_call != nb_ret) {
+        printf("\033[38;5;214m Warning : Nombre de call et de ret inegaux\033[0m\n");
+        exit(EXIT_FAILURE);
+    }
     
     while (1) {
         if (*pPC < 0) {
@@ -45,16 +61,9 @@ int main() {
             exit(EXIT_FAILURE);
         }
         (*pPC)++;
-        executeligne(tab_mem, pSP, pPC, tab_ins);
-        if (*pSP > 0) {
-            for (int i=0; i < SP; i++) {
-                printf("tab_mem[%d] = %d\n",i, tab_mem[i]);
-            }
-        printf("\n");
-        }
-
+        executeligne(tab_mem, pSP, pPC, tab_ins, nb_ligne);
     }
     
 
-    return 0;
+    return 0; 
 }
