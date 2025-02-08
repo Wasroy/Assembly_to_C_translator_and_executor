@@ -31,7 +31,7 @@ int main() {
     //FILE * sortie = fopen(sortie, 'r'); // PAS NECESSAIRE
     //Chaque ligne seront assignée à un élément de la structure instruction. On veut un tableau d'instruction de meme nombre déléments qu'il n'y a de ligne
 
-    int nb_ligne = nombreDeLigne(nomfichier) + 1;
+    int nb_ligne = nombreDeLigne(nomfichier);
     
     instruction** tab_ins = (instruction **)malloc(sizeof(instruction*) * (nb_ligne)); 
     savecode(tab_ins, nomfichier);    
