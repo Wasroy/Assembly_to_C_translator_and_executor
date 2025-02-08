@@ -71,7 +71,7 @@ int nombreDeLigne(const char* nomfichier) {
 	fclose(file);
 	if (NbDeLigne == 0) {
 		printf("\033[1;31mFichier vide\033[0m\n");
-        exit(1);
+        	exit(1);
 		}
 	return NbDeLigne;
 }
