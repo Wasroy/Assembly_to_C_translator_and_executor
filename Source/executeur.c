@@ -66,14 +66,14 @@ int nombreDeLigne(const char* nomfichier) {
 	int NbDeLigne = 0;
 	char c;
 	while((c = fgetc(file)) != EOF){
-		if(c == '\n') NbDeLigne +=1; /* Le \n est le caractère de fin de ligne, il figure donc même sur la dernière */
+		if(c == '\n') NbDeLigne +=1; 
 		}
 	fclose(file);
 	if (NbDeLigne == 0) {
 		printf("\033[1;31mFichier vide\033[0m\n");
         	exit(1);
 		}
-	return NbDeLigne;
+	return NbDeLigne +1 ; //On ajoute 1 car pas de caractère '\n' sur la dernière ligne
 }
     
 void savecode(instruction* tab[], const char* nomfichier) {
