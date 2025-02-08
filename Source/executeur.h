@@ -9,7 +9,7 @@ typedef struct {
 void executeligne(int tab_mem[], int *pSP, int *pPC, instruction **tab_ins);
 int nombreDeLigne(const char* nomfichier);
 void savecode(instruction* tab[], int nligne, const char*nomfichier);
-void pop(int x, int *SP, int tab_mem[]);
+void pop(int x, int *SP, int *PC, int tab_mem[]);
 void ipop(int *SP, int tab_mem[]);
 void push(int x,int tab_mem[], int *SP);
 void ipush(int *SP, int tab_mem[]);
@@ -23,6 +23,6 @@ void write(int tab_mem[], int adr);
 void op(int tab_mem[], int *pSP, int i);
 void rnd(int tab_mem[], int *pSP, int x);
 void dup(int tab_mem[], int *pSP);
-void halt();
+void halt(instruction ** tab_ins);
 
 #endif

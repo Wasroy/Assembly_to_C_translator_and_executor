@@ -26,26 +26,35 @@ int main() {
     return traducteur(fichier_assembleur, fichier_traduit_en_hexa);
 
     // DEBUT DE LA MASTERCLASS ICI MEME // */
-    const char *nomfichier = "hexa.txt";
+    const char *nomfichier = "hexasujet.txt";
 
     //FILE * sortie = fopen(sortie, 'r'); // PAS NECESSAIRE
     //Chaque ligne seront assignée à un élément de la structure instruction. On veut un tableau d'instruction de meme nombre déléments qu'il n'y a de ligne
 
     int nb_ligne = nombreDeLigne(nomfichier) + 1;
+    
     instruction** tab_ins = (instruction **)malloc(sizeof(instruction*) * (nb_ligne)); 
     savecode(tab_ins, nb_ligne-1, nomfichier);    
     
-    while (*pPC < nb_ligne) {
+    while (1) {
+        if (*pPC < 0) {
+            printf("\033[1;31m Erreur : tentative d'accéder à une ligne inexistante (négative) du code\033[0m\n");
+            exit(EXIT_FAILURE);}
+        if (*pPC >= nb_ligne) {
+            printf("\033[1;31m Erreur : tentative d'accéder à une ligne inexistante (superieure au nombre de ligne) du code\033[0m\n");
+            exit(EXIT_FAILURE);
+        }
         (*pPC)++;
         executeligne(tab_mem, pSP, pPC, tab_ins);
+        if (*pSP > 0) {
+            for (int i=0; i < SP; i++) {
+                printf("tab_mem[%d] = %d\n",i, tab_mem[i]);
+            }
+        printf("\n");
+        }
+
     }
-
-    printf("tab_mem[1000] = %d\n", tab_mem[1000]);
-
-    for (int i=0; i<10; i++) {
-            printf("tab_mem[%d] = %d\n", i, tab_mem[i]);}
-
-    free(tab_ins);
+    
 
     return 0;
 }

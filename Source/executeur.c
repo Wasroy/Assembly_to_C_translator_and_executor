@@ -7,7 +7,7 @@
 void executeligne(int tab_mem[], int *pSP, int *pPC, instruction **tab_ins) {
     switch (tab_ins[(*pPC)-1]->opcode) {
         case 0: 
-            pop(tab_ins[*pPC-1]->donnee, pSP, tab_mem);
+            pop(tab_ins[*pPC-1]->donnee, pSP, pPC, tab_mem);
             break;
         case 1: 
             ipop(pSP, tab_mem);
@@ -49,7 +49,7 @@ void executeligne(int tab_mem[], int *pSP, int *pPC, instruction **tab_ins) {
             dup(tab_mem, pSP);
             break;
         case 99: 
-            halt();
+            halt(tab_ins);
             break;
     }
 }
@@ -92,6 +92,8 @@ void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
         s_opcode[2] = '\0'; 
         strncpy(s_donnee, ligne + 3, 4); 
         s_donnee[4] = '\0'; 
+
+        //printf("Code instruction fichier : %s, Code donnee fichier : %s\n", s_opcode, s_donnee);
         
         tab[i] = (instruction *)malloc(sizeof(instruction));
         if (tab[i] == NULL){
@@ -115,19 +117,18 @@ void savecode(instruction* tab[], int nlignes, const char* nomfichier) {
     fclose(file);
 }  
 
-void pop(int x, int *SP, int tab_mem[]) {
+void pop(int x, int *SP,int *PC, int tab_mem[]) {
     if (*SP == 0) {
-        printf("Erreur : Débordement négatif de la pile (pile vide).\n");
+        printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction pop (SP vaut 0).\033[0m\n");
         exit(EXIT_FAILURE);
     }
     tab_mem[x] = tab_mem[*SP-1];
     (*SP)--;
-    //printf("On a pop la valeur %d\n", tab_mem[x]);
 }   
 
 void ipop(int *SP, int tab_mem[]) {
      if (*SP < 2) {
-        printf("Erreur : Débordement négatif de la pile (pile vide).\n");
+        printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction ipop (SP vaut 0).\033[0m\n");
         exit(EXIT_FAILURE);}
     tab_mem[tab_mem[*SP-1]] = tab_mem[*SP-2];
     *SP = (*SP)-2;
@@ -135,62 +136,79 @@ void ipop(int *SP, int tab_mem[]) {
 }
 
 void push(int x,int tab_mem[], int *SP) {
-    if (*SP == 4999) {
-        printf("Erreur : Débordement de la pile (pile pleine).\n");
+    if (*SP > 4999) {
+        printf("\033[1;31mErreur 2 : Débordement de la pile lors de l'appel à la fonction push - Mémoire saturée (SP > 4999).\033[0m\n");
         exit(EXIT_FAILURE);}
+    if (x < 0 || x > 4999) {
+        printf("\033[1;31mErreur 3 : Adresse invalide lors de l'appel à la fonction push - x < 0 ou x > 4999\033[0m\n");
+        exit(EXIT_FAILURE);}
+    if (tab_mem[*SP] != 0)
+    printf("\033[38;5;214m Warning : la pile a probablement écrasé des données à l'adresse %d \033[0m\n", *SP);
+
     tab_mem[*SP] = tab_mem[x];
     (*SP)++; 
     //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[x]);
 }
 
 void ipush(int *SP, int tab_mem[]) {
-    if (*SP == 4999) {
-        printf("Erreur : Débordement de la pile (pile pleine).\n");
+    if (*SP > 4999) {
+        printf("\033[1;31mErreur 2 : Débordement de la pile lors de l'appel à la fonction ipush - Mémoire saturée (SP > 4999).\033[0m\n");
         exit(EXIT_FAILURE);}
+    if (tab_mem[*SP-1] != 0)
+        printf("\033[38;5;214m Warning : la pile a probablement écrasé des données à l'adresse %d \033[0m\n", *SP);
     tab_mem[*SP-1] = tab_mem[tab_mem[*SP-1]];
     //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[tab_mem[*SP-1]]);
 }
 
 void push_i (int i, int *SP, int tab_mem[]) {
-    if (*SP == 4999) {
-        printf("Erreur : Débordement de la pile (pile pleine).\n");
+    if (*SP > 4999) {
+        printf("\033[1;31mErreur 2 : Débordement de la pile lors de l'appel à la fonction push# i - Mémoire saturée (SP > 4999).\033[0m\n");
         exit(EXIT_FAILURE);}
+    if (tab_mem[*SP] != 0)
+        printf("\033[38;5;214m Warning : la pile a probablement écrasé des données à l'adresse %d \033[0m\n", *SP);
+
     tab_mem[*SP] = i;
     (*SP)++;
-    //printf("On a mis en haut de la pile la valeur %d\n", i);
 }
 
 void jmp(int adr, int *PC, int tab_mem[]){
-    *PC = (*PC) + adr; 
-
-    //printf("On saute à l'adresse %d(JMP)\n", *PC);
+    *PC += adr; 
 }   
 
-void jnz(int adr, int *PC, int *pSP, int tab_mem[]) {
+void jnz(int adr, int *PC, int *pSP, int tab_mem[]) { 
     if (*pSP == 0) {
-        printf("Erreur : Débordement négatif de la pile (pile vide).\n");
+        printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction JNZ (SP vaut 0).\033[0m\n");
         exit(EXIT_FAILURE);}
-    if (tab_mem[*pSP-1] == 0) {
+    (*pSP)-- ; 
+
+    if (tab_mem[*pSP] != 0) {
         *PC += adr;}
         //printf("On saute à l'adresse %d car cette adresse est nulle (JNZ)\n", *PC, tab_mem[*pSP-1]);
-    else {
+    /*else {
         int a = *PC + adr;}
-        //printf("On ne saute pas à l'adresse %d car cette adresse est non nulle (JNZ) \n", a);}
-    (*pSP)-- ; 
-    
+        //printf("On ne saute pas à l'adresse %d car cette adresse est non nulle (JNZ) \n", a);}*/
 }
  
 void call(int tab_mem[], int adr, int* pSP, int* pPC) {
-     if (*pSP == 4999) {
-        printf("Erreur : Débordement de la pile (pile pleine).\n");
+     if (*pSP > 4999) {
+        printf("\033[1;31mErreur 2 : Débordement de la pile lors de l'appel à la fonction call - Mémoire saturée (SP vaut 4999).\033[0m\n");
         exit(EXIT_FAILURE);}
+    
+    if (tab_mem[*pSP] != 0)
+        printf("\033[38;5;214m Warning : la pile a probablement écrasé des données à l'adresse %d \033[0m\n", *pSP);
+
     tab_mem[*pSP] = *pPC;
+    (*pSP)++;
     *pPC += adr;
     //printf("Rien compris à la fonction mais on l'a effectuée\n");
     
 }
 
 void ret (int tab_mem[], int *pSP, int* pPC) {
+    if (*pSP == 0) {
+        printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction JNZ (SP vaut 0).\033[0m\n");
+        exit(EXIT_FAILURE);}
+
     *pPC = tab_mem[*pSP]; 
     (*pSP)--;
     //printf("Rien compris à la fonction mais on l'a effectuée\n");
@@ -199,7 +217,7 @@ void ret (int tab_mem[], int *pSP, int* pPC) {
 void read(int tab_mem[], int adr) {
 
     if (adr < 0 || adr > 4999) {
-        printf("Erreur : Adresse invalide.\n");
+        printf("\033[1;31mErreur 3 : Adresse invalide lors de l'appel à la fonction read - ard < 0 ou adr > 4999\033[0m\n");
         exit(EXIT_FAILURE);
     }
     int x;
@@ -212,7 +230,7 @@ void read(int tab_mem[], int adr) {
 
 void write(int tab_mem[], int adr) {
     if (adr < 0 || adr > 4999) {
-        printf("Erreur : Adresse invalide.\n");
+        printf("\033[1;31mErreur 3 : Adresse invalide lors de l'appel à la fonction write - ard < 0 ou adr > 4999\033[0m\n");
         exit(EXIT_FAILURE);
     }
     printf("La valeur contenue a l'adresse %d est %d.\n",adr, tab_mem[adr]);
@@ -221,84 +239,132 @@ void write(int tab_mem[], int adr) {
 void op(int tab_mem[], int *pSP, int i) {
     switch (i) {    
         case 0: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 0 (SP vaut 1 ou 0).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             if (tab_mem[*pSP] == tab_mem[*pSP-1]) 
-                tab_mem[*pSP] = 1;
+                tab_mem[*pSP-1] = 1;
             else 
-                tab_mem[*pSP] = 0;     
+                tab_mem[*pSP-1] = 0;     
             break;
         case 1: 
+        if (*pSP < 2) {
+            printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 1 (SP < 2).\033[0m\n");
+            exit(EXIT_FAILURE);}
             (*pSP)--;
             if (tab_mem[*pSP] == tab_mem[*pSP-1]) 
-                tab_mem[*pSP] = 0;
+                tab_mem[*pSP-1] = 0;
             else 
-                tab_mem[*pSP] = 1;   
+                tab_mem[*pSP-1] = 1;   
             break;
         case 2: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 2 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             if (tab_mem[*pSP - 1] >= tab_mem[*pSP])
-                tab_mem[*pSP] = 1;
+                tab_mem[*pSP-1] = 1;
             else 
-                tab_mem[*pSP] = 0;
+                tab_mem[*pSP-1] = 0;
             break;
         case 3: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 3 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             if (tab_mem[*pSP - 1] <= tab_mem[*pSP])
-                tab_mem[*pSP] = 1;
+                tab_mem[*pSP-1] = 1;
             else 
-                tab_mem[*pSP] = 0;
+                tab_mem[*pSP-1] = 0;
             break;
         case 4: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 4 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             if (tab_mem[*pSP - 1] > tab_mem[*pSP])
-                tab_mem[*pSP] = 1;
+                tab_mem[*pSP-1] = 1;
             else 
-                tab_mem[*pSP] = 0;
+                tab_mem[*pSP-1] = 0;
             break;
         case 5: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 5 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             if (tab_mem[*pSP - 1] < tab_mem[*pSP])
-                tab_mem[*pSP] = 1;
+                tab_mem[*pSP-1] = 1;
             else 
-                tab_mem[*pSP] = 0;
+                tab_mem[*pSP-1] = 0;
             break;
         case 6: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 6 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) | (tab_mem[*pSP]);
             break;
         case 7: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 7 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) ^ (tab_mem[*pSP]); 
             break;
         case 8: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 8 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) & (tab_mem[*pSP]);
             break;
         case 9: 
+            if (*pSP < 1) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 9 (SP < 1).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (tab_mem[*pSP-1]) = ~(tab_mem[*pSP-1]);
             break;
         case 10: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 10 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) + (tab_mem[*pSP]);
             break;
         case 11: 
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 11 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) - (tab_mem[*pSP]);
             break;
         case 12:
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 12 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
             (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) * (tab_mem[*pSP]);
             break;
         case 13:
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 13 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
-            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) / (tab_mem[*pSP]);
+            tab_mem[*pSP-1] = (tab_mem[*pSP-1]) / (tab_mem[*pSP]);
             break;
         case 14:
+            if (*pSP < 2) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 14 (SP < 2).\033[0m\n");
+                exit(EXIT_FAILURE);}
             (*pSP)--;
-            (tab_mem[*pSP-1]) = (tab_mem[*pSP-1]) % (tab_mem[*pSP]);
+            tab_mem[*pSP-1] = (tab_mem[*pSP-1]) % (tab_mem[*pSP]);
             break;
         case 15: 
-            (tab_mem[*pSP-1]) = -(tab_mem[*pSP-1]);
+            if (*pSP < 1) {
+                printf("\033[1;31mErreur 1 : Débordement négatif de la pile lors de l'appel à la fonction op 15 (SP < 1).\033[0m\n");
+                exit(EXIT_FAILURE);}
+            tab_mem[*pSP-1] = -(tab_mem[*pSP-1]);
             
             break;
     //printf("Operation correctement effectuée\n");
@@ -306,22 +372,33 @@ void op(int tab_mem[], int *pSP, int i) {
 }
 
 void rnd(int tab_mem[], int *pSP, int x) {
+    if (*pSP > 4999) {
+        printf("\033[1;31mErreur 2 : Débordement de la pile lors de l'appel à la fonction rnd - Mémoire saturée (SP > 4999).\033[0m\n");
+        exit(EXIT_FAILURE);}
+    
+    if (tab_mem[*pSP] != 0)
+        printf("\033[38;5;214m Warning : la pile a probablement écrasé des données à l'adresse %d \033[0m\n", *pSP);
     tab_mem[*pSP] = rand() % x; //rand() % x (bibliothèque stdlib) renvoie un nombre aléatoire entre 0 et x-1
     (*pSP)++;
     //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[*pSP]);
 }
 
 void dup(int tab_mem[], int *pSP) {
-    if (*pSP == 4999) {
-        printf("Erreur : Débordement de la pile (pile pleine).\n");
+    if (*pSP > 4999) {
+        printf("\033[1;31mErreur 2 : Débordement de la pile lors de l'appel à la fonction rnd - Mémoire saturée (SP > 4999).\033[0m\n");
         exit(EXIT_FAILURE);
     }
+
+    if (tab_mem[*pSP] != 0)
+        printf("\033[38;5;214m Warning : la pile a probablement écrasé des données à l'adresse %d \033[0m\n", *pSP);
+
     tab_mem[*pSP] = tab_mem[*pSP-1];
     (*pSP)++;
     //printf("On a dupliqué la valeur %d\n", tab_mem[*pSP]);
 }
 
-void halt() {
+void halt(instruction** tab_ins) {
     printf("Fin du programme\n");
+    free(tab_ins);
     exit(EXIT_SUCCESS);
 }
