@@ -26,15 +26,21 @@ void menu_trad() {
 }
 
 
-int main() {
+int main(int argc, char *argv[]) {
 
+    //On verifie qu'un fichier est correctement passé en argument
+    if (argc != 2) {
+        printf("\033[1;31m Erreur : veuillez passer un fichier en argument\033[0m\n");
+        exit(EXIT_FAILURE);
+    }
 
-    char fichier_assembleur[256];
+    
+
+    char *fichier_assembleur = argv[1];
     char fichier_hexa[] = "hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
 
     // Demande du chemin du fichier à traduire
-    menu_trad();
-    scanf("%255s", fichier_assembleur);
+    //menu_trad();
     printf("║                                                       ║\n");
     printf("╚═══════════════════════════════════════════════════════╝\n");
 
