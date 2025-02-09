@@ -19,10 +19,7 @@ void menu_trad() {
     printf("╔═══════════════════════════════════════════════════════╗\n");
     printf("║       Assembleur vers Machine - Projet Archi          ║\n");
     printf("║     William Miserolle & Nicolas De Pellegars Malhortie║\n");
-    printf("╠═══════════════════════════════════════════════════════╣\n");
-    printf("║  Indique le chemin du fichier à traduire :            ║\n");
-    printf("║                                                       ║\n");
-    printf("║  ➜ ");
+    printf("╚═══════════════════════════════════════════════════════╝\n");
 }
 
 
@@ -39,12 +36,8 @@ int main(int argc, char *argv[]) {
     char *fichier_assembleur = argv[1];
     char fichier_hexa[] = "hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
 
-    // Demande du chemin du fichier à traduire
-    //menu_trad();
-    printf("║                                                       ║\n");
-    printf("╚═══════════════════════════════════════════════════════╝\n");
-
-    //printf("\033[1;31m       \n");
+    menu_trad();
+    
     printf("\n📝 \033[1;32m Le fichier que tu as choisis est : %s \033[0m \n", fichier_assembleur);
 
 
