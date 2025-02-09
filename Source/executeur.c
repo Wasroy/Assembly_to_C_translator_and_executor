@@ -108,7 +108,7 @@ void savecode(instruction* tab[], const char* nomfichier) {
 	On règle donc ce problème manuellement, en s'assurant que le nombre indiquant la valeur de la donnée soit représentable sur 16 bits Cette vérifiaction 
  	n'est pas necessaire pour  le code opération car le compilateur ne peut générer un fichier qu'avec des code opérations adéquats.*/
 	    
-        if (b>32767) {
+        if (a>32767) {
             tab[i]->donnee = a - 65536;}
         else {tab[i]->donnee = a;}
         i++;
