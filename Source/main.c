@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     int nb_ligne = nombreDeLigne(nomfichier);
     
     instruction** tab_ins = (instruction **)malloc(sizeof(instruction*) * (nb_ligne)); 
-    savecode(tab_ins, nomfichier);    
+    sauvegardercode(tab_ins, nomfichier);    
 
     //Detection d'un possible warning : si il existe un call sans ret ou un ret sans call
     int nb_call = 0;

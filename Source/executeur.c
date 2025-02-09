@@ -76,7 +76,7 @@ int nombreDeLigne(const char* nomfichier) {
 	return NbDeLigne +1 ; //On ajoute 1 car pas de caractère '\n' sur la dernière ligne
 }
     
-void savecode(instruction* tab[], const char* nomfichier) {
+void sauvegardercode(instruction* tab[], const char* nomfichier) {
     FILE *file = fopen(nomfichier, "r");
     if (file == NULL) {
         perror("\033[1;31mErreur lors de l'ouverture du fichier\033[0m");

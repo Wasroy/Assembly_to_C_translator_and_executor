@@ -8,7 +8,7 @@ typedef struct {
 
 void executeligne(int tab_mem[], int *pSP, int *pPC, instruction **tab_ins, int nb_ligne);
 int nombreDeLigne(const char* nomfichier);
-void savecode(instruction* tab[], const char*nomfichier);
+void sauvegardercode(instruction* tab[], const char*nomfichier);
 void pop(int x, int *SP, int *PC, int tab_mem[]);
 void ipop(int *SP, int tab_mem[], int *pPC);
 void push(int x,int tab_mem[], int *SP, int*pPc);
