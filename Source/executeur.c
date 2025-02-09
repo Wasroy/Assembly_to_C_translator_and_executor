@@ -66,7 +66,7 @@ int nombreDeLigne(const char* nomfichier) {
 	int NbDeLigne = 0;
 	char c;
 	while((c = fgetc(file)) != EOF){
-		if(c == '\n') NbDeLigne +=1; 
+		if(c == '\n') NbDeLigne +=1; //Compte le nombre de caractères '\n'
 		}
 	fclose(file);
 	if (NbDeLigne == 0) {
@@ -93,25 +93,24 @@ void savecode(instruction* tab[], const char* nomfichier) {
         s_opcode[2] = '\0'; 
         strncpy(s_donnee, ligne + 3, 4); 
         s_donnee[4] = '\0'; 
-
-        //printf("Code instruction fichier : %s, Code donnee fichier : %s\n", s_opcode, s_donnee);
         
         tab[i] = (instruction *)malloc(sizeof(instruction));
         if (tab[i] == NULL){
 			printf("\033[1;31mUne allocation mémoire n'a pas pu être effectué\033[0m\n");
 			exit(1);
 			}
-        int a = (int)strtol(s_opcode, NULL, 16);
+	
+        tab[i] -> opcode = (int)strtol(s_opcode, NULL, 16); //effectuer la conversion hexadecimal vers int avec strtol
         
-        int b = (int)strtol(s_donnee, NULL, 16);
+        int a = (int)strtol(s_donnee, NULL, 16);
 
-        if (a>32767) {
-            tab[i]->opcode = a - 65536;}
-        else {tab[i]->opcode = a;}
-        
+	/*Les valeurs obtenues ci-dessus ne sont pas signées. Par exemple, dans le programme du sujet, fff6 renvoyait la valeur 65526 au lieu de -10. 
+	On règle donc ce problème manuellement, en s'assurant que le nombre indiquant la valeur de la donnée soit représentable sur 16 bits Cette vérifiaction 
+ 	n'est pas necessaire pour  le code opération car le compilateur ne peut générer un fichier qu'avec des code opérations adéquats.*/
+	    
         if (b>32767) {
-            tab[i]->donnee = b - 65536;}
-        else {tab[i]->donnee = b;}
+            tab[i]->donnee = a - 65536;}
+        else {tab[i]->donnee = a;}
         i++;
     }
 
@@ -133,7 +132,6 @@ void ipop(int *SP, int tab_mem[], int* pPC) {
         exit(EXIT_FAILURE);}
     tab_mem[tab_mem[*SP-1]] = tab_mem[*SP-2];
     *SP = (*SP)-2;
-    //printf("On a pop la valeur %d\n", tab_mem[tab_mem[*SP-1]]);
 }
 
 void push(int x,int tab_mem[], int *SP, int* pPC) {
@@ -148,7 +146,6 @@ void push(int x,int tab_mem[], int *SP, int* pPC) {
 
     tab_mem[*SP] = tab_mem[x];
     (*SP)++; 
-    //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[x]);
 }
 
 void ipush(int *SP, int tab_mem[], int* pPC) {
@@ -158,7 +155,6 @@ void ipush(int *SP, int tab_mem[], int* pPC) {
     if (tab_mem[*SP-1] != 0)
         printf("\033[38;5;214m Warning ligne %d : la pile a peut être écrasé des données à l'adresse %d \033[0m\n",*pPC, *SP);
     tab_mem[*SP-1] = tab_mem[tab_mem[*SP-1]];
-    //printf("On a mis en haut de la pile la valeur %d\n", tab_mem[tab_mem[*SP-1]]);
 }
 
 void push_i (int i, int *SP, int tab_mem[], int *pPC) {
@@ -249,7 +245,6 @@ void ret (int tab_mem[], int *pSP, int* pPC) {
 
     *pPC = tab_mem[*pSP]; 
     (*pSP)--;
-    //printf("Rien compris à la fonction mais on l'a effectuée\n");
 }
 
 void read(int tab_mem[], int adr, int *pPC) {
