@@ -209,6 +209,27 @@ int traduire_instruction(const char* ligne, char* code_hexa, int adresse_courant
     return 0;
 }
 
+
+int nombreDeLigne(const char* nomfichier) {  //on utilise la meme fonction que dans l'executeur
+	FILE* file = fopen(nomfichier,"r");
+    if (file == NULL) {
+        perror("\033[1;31mErreur lors de l'ouverture du fichier\033[0m");
+        exit(EXIT_FAILURE);
+    }
+
+	int NbDeLigne = 0;
+	char c;
+	while((c = fgetc(file)) != EOF){
+		if(c == '\n') NbDeLigne +=1; //Compte le nombre de caractères '\n'
+		}
+	fclose(file);
+	if (NbDeLigne == 0) {
+		printf("\033[1;31mFichier vide\033[0m\n");
+        	exit(1);
+		}
+	return NbDeLigne +1 ; //On ajoute 1 car pas de caractère '\n' sur la dernière ligne
+}
+
 int traducteur(const char* fichier_assembleur, const char* fichier_hexa) {
 
     //printf("\n Le traducteur a été utilisé depuis le fichier assembleur_to_machine.c ! bv gros bg \n");
@@ -220,7 +241,14 @@ int traducteur(const char* fichier_assembleur, const char* fichier_hexa) {
     }
 
     FILE* entree = fopen(fichier_assembleur, "r");
+
+
+    int nb_de_ligne_fichier_assembleur = nombreDeLigne(fichier_assembleur);
+    
+    //printf("nb de entree : %d",nb_de_ligne_fichier_assembleur);
+
     FILE* sortie = fopen(fichier_hexa, "w");
+    //printf("%s",fichier_hexa);
 
     if (!entree) { //si il y a un soucis pour  lire ou ecrire un fichier c a d le chemin d'entree ou de sortie de hexa.txt est invalide
         printf("\nProblème d'ouverture du fichier, verifie le repertoire\n");
@@ -234,21 +262,33 @@ int traducteur(const char* fichier_assembleur, const char* fichier_hexa) {
         return -1;
     }
 
+
     //supposition naturelle pour les longueurs
     char ligne[100];
     char code_hexa[100];
     int adresse_courante = 0;
 
+
     while (fgets(ligne, sizeof(ligne), entree)) {
         if (traduire_instruction(ligne, code_hexa, adresse_courante, &tbl_etq) != 0) {
-            printf("\n Erreur de syntaxe dans la ligne : %s \n ", ligne);
+            printf("\n Erreur à la ligne : %s \n ", ligne);
             fclose(entree);
             fclose(sortie);
             return -1;
         }
 
         adresse_courante++;
-        fprintf(sortie, "%s\n", code_hexa);
+
+        //printf("%d\n",adresse_courante);
+        //permet de pas ecrire une ligne vide à la fin
+        if (adresse_courante<nb_de_ligne_fichier_assembleur){
+            fprintf(sortie, "%s\n", code_hexa);
+        }
+        else {
+            fprintf(sortie, "%s", code_hexa);
+
+        }
+        
     }
 
     fclose(entree);
