@@ -209,6 +209,22 @@ int traduire_instruction(const char* ligne, char* code_hexa, int adresse_courant
     return 0;
 }
 
+/*
+
+
+int hamming(int etiq_erreur, int etiq_voulu) { //faudt qu'on verif dans tabl_etiq
+    int xor_car = etiq_erreur ^ etiq_voulu; //xor des carac
+    int cpt = 0;
+    
+    while (xor_car) {
+        cpt += xor_car & 1; // verif si dernier bit à  1
+        xor_car >>= 1; //décalage de bits en C vers la droite ?
+    }
+    return cpt;
+}
+
+
+*/
 
 int traducteur(const char* fichier_assembleur, const char* fichier_hexa) {
 
