@@ -54,8 +54,14 @@ int main() {
     printf("\n ✅ \033[1;36m Tu peux retrouver le fichier traduit nommé hexa.txt au chemin : %s \033[0m \n \n", fichier_hexa);
 
 
-    return traducteur(fichier_assembleur, fichier_hexa);
+    int traduction_reussi = traducteur(fichier_assembleur, fichier_hexa); //0 si ça ce passe bien et -1 si un prolbème
 
+    if (traduction_reussi ==-1){
+        printf("\033[38;5;214m Attention erreur dans la traduction. Fin du programme ! \033[0m\n");
+        exit (EXIT_FAILURE);
+    }
+
+    
 
     const char *nomfichier = "hexa.txt";
 
