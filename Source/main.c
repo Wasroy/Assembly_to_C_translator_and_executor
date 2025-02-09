@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) {
 
 
     int traduction_reussi = traducteur(fichier_assembleur, fichier_hexa); //0 si ça ce passe bien et -1 si un prolbème
-    traduction_reussi = -1;
+    
 
     if (traduction_reussi ==-1){
         printf("\033[1;31m Attention erreur dans la traduction. Fin du programme ! \033[0m\n");
