@@ -119,7 +119,7 @@ void savecode(instruction* tab[], const char* nomfichier) {
 
 void pop(int x, int *SP,int *PC, int tab_mem[]) {
     if (*SP == 0) {
-        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction pop (SP vaut 0).\033[0m\n", *PC); //On affiche la ligne *PC car PC représente l'instruction suivante. Or le tableau d'instruction commence à 0, et pour afficher la ligne correspondante, on afficher donc *PC-1+1=*PC 
+        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction pop (SP <= 0).\033[0m\n", *PC); //On affiche la ligne *PC car PC représente l'instruction suivante. Or le tableau d'instruction commence à 0, et pour afficher la ligne correspondante, on afficher donc *PC-1+1=*PC 
         exit(EXIT_FAILURE);
     }
     tab_mem[x] = tab_mem[*SP-1];
@@ -128,7 +128,7 @@ void pop(int x, int *SP,int *PC, int tab_mem[]) {
 
 void ipop(int *SP, int tab_mem[], int* pPC) {
      if (*SP < 2) {
-        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction ipop (SP vaut 0).\033[0m\n", *pPC);
+        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction ipop (SP < 2).\033[0m\n", *pPC);
         exit(EXIT_FAILURE);}
     tab_mem[tab_mem[*SP-1]] = tab_mem[*SP-2];
     *SP = (*SP)-2;
@@ -186,12 +186,8 @@ void jmp(int adr, int *PC, int tab_mem[], int n_ligne) {
 
 void jnz(int adr, int *PC, int *pSP, int tab_mem[], int n_ligne) { 
 
-    if (adr == -1) {
-        printf("\033[1;31mErreur ligne %d : boucle infine détectée (JMP -1).\033[0m\n", *PC);
-    }
-
     if (*pSP == 0) {
-        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction JNZ (SP vaut 0).\033[0m\n", *PC);
+        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction JNZ (SP <= 0).\033[0m\n", *PC);
         exit(EXIT_FAILURE);}
     (*pSP)-- ; 
 
@@ -211,13 +207,8 @@ void jnz(int adr, int *PC, int *pSP, int tab_mem[], int n_ligne) {
  
 void call(int tab_mem[], int adr, int* pSP, int* pPC, int n_ligne) {
 
-    if (adr == -1) {
-        printf("\033[1;31mErreur ligne %d : boucle infine détectée (JMP -1).\033[0m\n", *pPC);
-
-    }
-
      if (*pSP > 4999) {
-        printf("\033[1;31mErreur ligne %d : Débordement de la pile lors de l'appel à la fonction call - Mémoire saturée (SP vaut 4999).\033[0m\n", *pPC);
+        printf("\033[1;31mErreur ligne %d : Débordement de la pile lors de l'appel à la fonction call - Mémoire saturée (SP > 4999).\033[0m\n", *pPC);
         exit(EXIT_FAILURE);}
     
     if (tab_mem[*pSP] != 0)
@@ -240,7 +231,7 @@ void call(int tab_mem[], int adr, int* pSP, int* pPC, int n_ligne) {
 
 void ret (int tab_mem[], int *pSP, int* pPC) {
     if (*pSP == 0) {
-        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction JNZ (SP vaut 0).\033[0m\n", *pPC);
+        printf("\033[1;31mErreur ligne %d : Débordement négatif de la pile lors de l'appel à la fonction JNZ (SP <= 0).\033[0m\n", *pPC);
         exit(EXIT_FAILURE);}
 
     *pPC = tab_mem[*pSP]; 
