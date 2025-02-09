@@ -2,8 +2,8 @@
 #include <stdlib.h>   
 #include <string.h>   
 #include <ctype.h> // Pour vérifier des types des variables
-
 #include "assembleur_to_machine.h" 
+#include "executeur.h"
 
 //On utilise dans cette traduction 2 passages, le premier pour sauvegarder les étiquettes et le second pour pouvoir les comparer et calculer les sauts avec
 
@@ -209,26 +209,6 @@ int traduire_instruction(const char* ligne, char* code_hexa, int adresse_courant
     return 0;
 }
 
-
-int nombreDeLigne(const char* nomfichier) {  //on utilise la meme fonction que dans l'executeur
-	FILE* file = fopen(nomfichier,"r");
-    if (file == NULL) {
-        perror("\033[1;31mErreur lors de l'ouverture du fichier\033[0m");
-        exit(EXIT_FAILURE);
-    }
-
-	int NbDeLigne = 0;
-	char c;
-	while((c = fgetc(file)) != EOF){
-		if(c == '\n') NbDeLigne +=1; //Compte le nombre de caractères '\n'
-		}
-	fclose(file);
-	if (NbDeLigne == 0) {
-		printf("\033[1;31mFichier vide\033[0m\n");
-        	exit(1);
-		}
-	return NbDeLigne +1 ; //On ajoute 1 car pas de caractère '\n' sur la dernière ligne
-}
 
 int traducteur(const char* fichier_assembleur, const char* fichier_hexa) {
 

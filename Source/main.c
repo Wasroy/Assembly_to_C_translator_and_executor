@@ -30,7 +30,7 @@ int main() {
 
 
     char fichier_assembleur[256];
-    char fichier_hexa[] = "C:\\Users\\willi\\Desktop\\Programmation_C\\Projet_Archi\\Source\\hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
+    char fichier_hexa[] = "hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
 
     // Demande du chemin du fichier à traduire
     menu_trad();
