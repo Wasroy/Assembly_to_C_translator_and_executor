@@ -36,7 +36,7 @@ int main() {
     instruction** tab_ins = (instruction **)malloc(sizeof(instruction*) * (nb_ligne)); 
     savecode(tab_ins, nomfichier);    
 
-    //Detection d'une possible erreur : si il existe un call sans ret ou un ret sans call
+    //Detection d'un possible warning : si il existe un call sans ret ou un ret sans call
     int nb_call = 0;
     int nb_ret = 0;
     for (int i = 0; i < nb_ligne; i++) {
@@ -49,7 +49,6 @@ int main() {
     }
     if (nb_call != nb_ret) {
         printf("\033[38;5;214m Warning : Nombre de call et de ret inegaux\033[0m\n");
-        exit(EXIT_FAILURE);
     }
     
     while (1) {
@@ -63,7 +62,5 @@ int main() {
         (*pPC)++;
         executeligne(tab_mem, pSP, pPC, tab_ins, nb_ligne);
     }
-    
-
     return 0; 
 }
