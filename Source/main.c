@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     
 
     char *fichier_assembleur = argv[1];
-    char fichier_hexa[] = "hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
+    char fichier_hexa[] = "Source/hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
 
     menu_trad();
     
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
 
     
 
-    const char *nomfichier = "hexa.txt";
+    const char *nomfichier = "Source/hexa.txt";
 
     int nb_ligne = nombreDeLigne(nomfichier);
     
