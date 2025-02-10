@@ -15,7 +15,8 @@ instruction_assembleur_et_hexa table_opcodes[] = {
     {"rnd", 0x0c}, {"dup", 0x0d}, {"halt", 0x63} 
 };
 
-int taille_opcodes = sizeof(table_opcodes) / sizeof(instruction_assembleur_et_hexa); //ou juste faire un #DEFINE TAILLEOPCODE 14 mais c plus stylé comme ça. C'est mieux pour par exemple si on veut rajouter une nouvelle instruction assembleur 
+//ou juste faire un #DEFINE TAILLEOPCODE N mais c'est plus adéquat comme ça. C'est mieux pour par exemple si un developpeur veut rajouter une nouvelle instruction assembleur !
+int taille_opcodes = sizeof(table_opcodes) / sizeof(instruction_assembleur_et_hexa); 
 
 // Fonction pour obtenir l'équivalent de l'instruction assembleur en hexadécimal. On parcout le tableau et on pioche dans l'équivalent opcode avec .opcode
 int obtenir_opcode(const char* instruction) {
@@ -211,18 +212,18 @@ int traduire_instruction(const char* ligne, char* code_hexa, int adresse_courant
 
 /*
 
+int hamming(char *etiq_erreur, char *etiq_voulu) { //faudt qu'on verif dans tabl_etiq
 
-int hamming(int etiq_erreur, int etiq_voulu) { //faudt qu'on verif dans tabl_etiq
-    int xor_car = etiq_erreur ^ etiq_voulu; //xor des carac
+    if (strlen(etiq_erreur) != strlen(etiq_voulu) ){
+        exit(EXIT_FAILURE) //Modifier la fonction pour que deux chaines de caractère de longueur différentes ne renvoie pas une erreur
+    }
     int cpt = 0;
-    
-    while (xor_car) {
-        cpt += xor_car & 1; // verif si dernier bit à  1
-        xor_car >>= 1; //décalage de bits en C vers la droite ?
+    for (int i = 0, i<strlen(etiq_erreur), i++) {
+        if (etiq_erreur[i] != etiq_voulu[i]);
+            cpt++;
     }
     return cpt;
 }
-
 
 */
 
