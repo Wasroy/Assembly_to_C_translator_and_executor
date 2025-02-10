@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     
 
     char *fichier_assembleur = argv[1];
-    char fichier_hexa[] = "Source/hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
+    char fichier_hexa[] = "hexa.txt" ; //changer en chemin relatif en Source/hexa.txt
 
     menu_trad();
     
@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
 
     printf("\n \n");
 
-    printf("\n ✅ \033[1;36m Tu peux retrouver le fichier traduit nommé hexa.txt au chemin : %s \033[0m \n \n", fichier_hexa);
+    //printf("\n ✅ \033[1;36m Tu peux retrouver le fichier traduit nommé hexa.txt au chemin : %s \033[0m \n \n", fichier_hexa);
 
 
     int traduction_reussi = traducteur(fichier_assembleur, fichier_hexa); //0 si ça ce passe bien et -1 si un prolbème
@@ -61,9 +61,10 @@ int main(int argc, char *argv[]) {
         exit (EXIT_FAILURE);
     }
 
+    printf("\n ✅ \033[1;36m Tu peux retrouver le fichier traduit nommé hexa.txt au chemin : %s \033[0m \n \n", fichier_hexa);
     
 
-    const char *nomfichier = "Source/hexa.txt";
+    const char *nomfichier = "hexa.txt";
 
     int nb_ligne = nombreDeLigne(nomfichier);
     
