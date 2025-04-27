@@ -1,19 +1,19 @@
-# Traduction et Simulation d'un Assembleur vers Code Machine
+# Assembler to Machine Code Translation and Simulation
 
-## Présentation
+## Overview
 
-Ce projet a pour but de traduire un programme écrit en assembleur vers son équivalent en code machine hexadécimal, puis de simuler son exécution.  
-Il a été réalisé dans le cadre du cours **Architecture des Ordinateurs** à l'Université Paris Dauphine.
+This project aims to translate a program written in assembly language into its equivalent hexadecimal machine code and then simulate its execution.  
+It was developed as part of the **Computer Architecture** course at Université Paris Dauphine.
 
-## Fonctionnalités principales
+## Key Features
 
-- **Traduction Assembleur → Hexadécimal**  
-- **Exécution d'un programme hexadécimal**  
-- **Menu interactif** avec affichage stylisé dans le terminal (couleurs, ASCII art)  
-- **Détection d'erreurs** lors de la traduction et de l'exécution (syntaxe, débordements de pile, accès illégal en mémoire, etc.)  
-- **Gestion des étiquettes** pour les instructions de saut
+- **Translation: Assembly → Hexadecimal Machine Code**  
+- **Execution of Hexadecimal Program**  
+- **Interactive Menu** with stylized terminal display (colors, ASCII art)  
+- **Error Detection** during translation and execution (syntax errors, stack overflow/underflow, illegal memory access, etc.)  
+- **Label Management** for jump instructions
 
-## Structure du projet
+## Project Structure
 
 ```
 Projet_Archi/
@@ -23,61 +23,61 @@ Projet_Archi/
 │   ├── executeur.c
 │   ├── executeur.h
 │   ├── main.c
-├── exemples/         # Exemples de fichiers assembleur
+├── exemples/         # Example assembly files
 └── README.md
 ```
 
-- `main.c` : Gestion du menu et de l'interface utilisateur.
-- `assembleur_to_machine.c / .h` : Traduction du code assembleur vers hexadécimal.
-- `executeur.c / .h` : Exécution du fichier hexadécimal.
+- `main.c`: Manages the menu and user interface.
+- `assembleur_to_machine.c / .h`: Handles translation from assembly to hexadecimal.
+- `executeur.c / .h`: Handles execution of the hexadecimal file.
 
 ## Installation
 
-1. **Cloner le dépôt :**
+1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/ton-pseudo/projet-archi.git
+git clone https://github.com/your-username/projet-archi.git
 cd projet-archi
 ```
 
-2. **Compiler :**
+2. **Compile:**
 
 ```bash
 gcc Source/main.c Source/assembleur_to_machine.c Source/executeur.c -o executeur
 ```
 
-3. **Exécuter :**
+3. **Run:**
 
 ```bash
 ./executeur
 ```
 
-## Comment utiliser
+## How to Use
 
-1. Lancer l'exécutable.
-2. Choisir un fichier assembleur parmi les exemples ou fournir le vôtre.
-3. Le programme traduit le fichier en hexadécimal (`hexa.txt`).
-4. Le simulateur exécute ce fichier et affiche les résultats dans le terminal.
+1. Launch the executable.
+2. Select an assembly file from the examples or provide your own.
+3. The program translates the file into hexadecimal (`hexa.txt`).
+4. The simulator executes this file and displays results in the terminal.
 
-## Exemples
+## Examples
 
-Des exemples de fichiers assembleur sont disponibles dans le dossier `exemples/`.
+Example assembly files are available in the `exemples/` folder.
 
-## Bugs connus et améliorations possibles
+## Known Bugs and Possible Improvements
 
-- Pas de gestion des commentaires dans l'assembleur (`;`).
-- Aucune correction automatique des fautes dans les étiquettes.
-- Complexité potentielle pour gérer des boucles imbriquées lors de la détection d'erreurs.
+- No support for comments (`;`) in assembly code.
+- No automatic correction of label typos.
+- Potential complexity handling nested loops during error detection.
 
-**Idées d'améliorations** :  
-- Ajout de la détection de fautes de frappe dans les étiquettes (distance de Levenshtein).
-- Meilleure gestion mémoire pour de très grands fichiers.
+**Ideas for Improvements:**  
+- Add typo detection in labels (e.g., using Levenshtein distance).
+- Better memory management for very large files.
 
-## Développeurs
+## Developers
 
 - **William Miserolle**
 - **Nicolas de Pellegars Malhortie**
 
 ---
 
-*Projet réalisé en avril 2025.*
+*Project completed in April 2025.*
