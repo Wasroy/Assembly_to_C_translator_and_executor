@@ -73,10 +73,6 @@ Example assembly files are available in the `exemples/` folder.
 - Add typo detection in labels (e.g., using Levenshtein distance).
 - Better memory management for very large files.
 
-## Developers
-
-- **William Miserolle**
-- **Nicolas de Pellegars Malhortie**
 
 ---
 
